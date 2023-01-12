@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenCvSharp;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace WEBPOS_RFIDSender
 {
-    internal class CameraController
+    class CameraController
     {
         private VideoCapture capture = null;
 
@@ -76,7 +77,7 @@ namespace WEBPOS_RFIDSender
             else
             {
 
-                Image saveImageLoad = Image.FromFile(GlobalData.config.path_ImageError);
+                Image saveImageLoad = Image.FromFile("Resource_RFID/error.png");
                 byte[] imageBytes = imgToByteArray(saveImageLoad);
                 base64String = Convert.ToBase64String(imageBytes);
             }

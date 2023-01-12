@@ -341,6 +341,12 @@ namespace WEBPOS_RFIDSender.Common
 
 
         //Config data
+        public static string url_api_Employee;
+        public static string url_Odoo;
+        public static string url_checkin;
+        public static string url_checkout;
+        public static string url_camera;
+        public static string path_ImageError;
         public static string api_key;
         public static string url_api;
         public static string sub_url;

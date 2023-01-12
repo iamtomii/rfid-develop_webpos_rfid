@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using WEBPOS_RFIDSender.Common;
 using WEBPOS_RFIDSender.StateModel;
+using System.Drawing;
 
 namespace WEBPOS_RFIDSender
 {
@@ -18,9 +19,23 @@ namespace WEBPOS_RFIDSender
 
         private bool appActiving = false;
         private int workingTask_ID;
-
+        public Boolean Ischeckin = true;
+        public string Name { get; set; }
+        public string Id { get; set; }
+        public string Deparment { get; set; }
+        public string Mail { get; set; }
+        public string Phone { get; set; }
+        public DateTime beginTime { get; set; }
         private void Form1_Load(object sender, EventArgs e)
         {
+            if (Ischeckin)
+            {
+                this.label5.Text = "CHECK-IN";
+            }
+            else
+            {
+                this.label5.Text = "CHECK-OUT";
+            }
             Process[] processes = Process.GetProcessesByName("WEBPOS_RFIDSender");
             if (processes.Length > 1)
             {
@@ -44,6 +59,7 @@ namespace WEBPOS_RFIDSender
             GlobalVariables.opos.OPOS_EnableDevice(GlobalVariables.OPOSRFID1, GlobalVariables.device_name);
 
             statusContent.Text = "ACTIVING";
+            WindowState = FormWindowState.Maximized;
         }
 
         private void OPOSRFID1_DataEvent_Test(object sender, AxOPOSRFIDLib._DOPOSRFIDEvents_DataEventEvent e)
@@ -167,18 +183,36 @@ namespace WEBPOS_RFIDSender
                 GlobalVariables.opos.OPOS_DisableDevice(GlobalVariables.OPOSRFID1);
             }
         }
+        public void ClearAll()
+        {
+            textBoxName.Clear();
+            textBoxID.Text = "";
+            textBoxDepartment.Text = "";
+            pictureBoxInfo.Image = null;
+            GlobalVariables.opos.OPOS_StopReading(GlobalVariables.OPOSRFID1);
+            GlobalVariables.list_rfid.Clear();
+            GlobalVariables.rfid_code.Clear();
+
+            /*Clear_NowCheckInOut();
+            Clear_YesterdayCheckInOut();*/
+
+        }
 
         private void startBtn_Click(object sender, EventArgs e)
         {
             
                     GlobalVariables.opos.OPOS_StartReading(GlobalVariables.OPOSRFID1, GlobalVariables.rT);
-     
+                    appActiving = true;
+
         }
 
         private void stopBtn_Click(object sender, EventArgs e)
         {
 
                GlobalVariables.opos.OPOS_StopReading(GlobalVariables.OPOSRFID1);
+               GlobalVariables.list_rfid.Clear();
+               GlobalVariables.rfid_code.Clear();
+               appActiving = false;
 
         }
 
@@ -213,6 +247,110 @@ namespace WEBPOS_RFIDSender
             //        stopBtn.Enabled = false;
             //        break;
             //}
+        }
+
+        private void statusLB_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label7_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label6_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label10_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label12_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label9_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label11_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBoxName_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBoxTimeLastCheckIn_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBoxNowCheckOut_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void pictureBoxCheckin_Click(object sender, EventArgs e)
+        {
+            Console.WriteLine("Switch mode click!");
+            ClearAll();
+            this.notice.Text = "";
+
+            if (Ischeckin)
+            {
+                Ischeckin = false;
+                this.label4.Text = "CHECK-OUT";
+                this.label4.ForeColor = Color.DarkOrange;
+                GlobalVariables.opos.OPOS_StartReading(GlobalVariables.OPOSRFID1, GlobalVariables.rT);
+
+            }
+            else
+            {
+                Ischeckin = true;
+                this.label4.Text = "CHECK-IN";
+                this.label4.ForeColor = Color.DarkGreen;
+                GlobalVariables.opos.OPOS_StartReading(GlobalVariables.OPOSRFID1, GlobalVariables.rT);
+
+            }
+        }
+
+        private void pictureBoxInfo_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

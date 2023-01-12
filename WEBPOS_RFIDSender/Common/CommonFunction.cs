@@ -90,6 +90,12 @@ namespace WEBPOS_RFIDSender.Common
             GlobalVariables.ept_unload = dataInFile["ept_unload"];
 
             GlobalVariables.webpos_app_path = dataInFile["webpos_app_path"];
+            GlobalVariables.url_Odoo = dataInFile["url_Odoo"];
+            GlobalVariables.url_checkin = dataInFile["url_checkin"];
+            GlobalVariables.url_checkout = dataInFile["url_checkout"];
+            GlobalVariables.url_api_Employee = dataInFile["url_api_Employee"];
+            GlobalVariables.url_camera = dataInFile["url_camera"];
+            GlobalVariables.path_ImageError = dataInFile["path_ImageError"];
 
             string[] titles = dataInFile["state_title"].Split(',');
             foreach(string title in titles)
