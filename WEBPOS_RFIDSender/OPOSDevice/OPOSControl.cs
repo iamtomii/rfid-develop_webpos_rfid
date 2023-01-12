@@ -19,6 +19,7 @@ using Newtonsoft.Json;
 
 namespace WEBPOS_RFIDSender.OposControl
 {
+    public delegate void FlushState();                                                        // Update real-time status invoke
 
     public class MyJson
     {
@@ -34,6 +35,7 @@ namespace WEBPOS_RFIDSender.OposControl
     public class OPOS : System.Windows.Forms.UserControl
     {
         API_odoo.MyResponse infoEmp = new API_odoo.MyResponse();
+        private bool IsFlush = false;
 
         public OPOS()
         {
@@ -42,14 +44,18 @@ namespace WEBPOS_RFIDSender.OposControl
 
         private async void OPOSRFID1_DataEvent(object sender, _DOPOSRFIDEvents_DataEventEvent e)
         {
-            WindowAPI.PostMessage(IntPtr.Zero, (uint)GlobalVariables.WM_KEYDOWN, (int)(System.Enum.Parse(typeof(GlobalVariables.Keys), "Return")), (int)(0));
+            if (GlobalVariables.cam_check == null)
+            {
+                GlobalVariables.cam_check = new CameraController();
+                GlobalVariables.cam_check.StreamVideo("0");
 
+            }
+            WindowAPI.PostMessage(IntPtr.Zero, (uint)GlobalVariables.WM_KEYDOWN, (int)(System.Enum.Parse(typeof(GlobalVariables.Keys), "Return")), (int)(0));
             int TagCount;
             string UserData;
             /*HttpClient api_client = new HttpClient();
             api_client.BaseAddress = new Uri(GlobalVariables.url_api);
             api_client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));*/
-
             // TagCount
             TagCount = GlobalVariables.OPOSRFID1.TagCount;
 
@@ -73,23 +79,17 @@ namespace WEBPOS_RFIDSender.OposControl
 
                 if (!GlobalVariables.rfid_code.Contains(new_code))
                 {
-                    if (GlobalData.cam_check == null)
-                    {
-                        GlobalData.cam_check = new CameraController();
-                        GlobalData.cam_check.StreamVideo("0");
-
-                    }
-
                     Console.WriteLine("RFID CODE: " + new_code);
-                    //infoLog.Text += String.Format("RFID CODE: {0}\n", new_code);
-                    Program.mainForm.infoLog.Invoke(new Action(() => Program.mainForm.infoLog.AppendText(String.Format("{0}\r\n", new_code))));
+                    //Program.mainForm.infoLog.Invoke(new Action(() => Program.mainForm.infoLog.AppendText(String.Format("{0}\r\n", new_code))));
 
                     GlobalVariables.rfid_code.Add(new_code);
-
                     //call API
 
-                    showInfo(new_code);
-
+                    if (!GlobalVariables.interval_rfid.Contains(new_code))
+                    {
+                        GlobalVariables.interval_rfid.Add(new_code);
+                    }
+                    showInfoAsync(new_code);
 
                 }
 
@@ -97,17 +97,18 @@ namespace WEBPOS_RFIDSender.OposControl
             }
             GlobalVariables.OPOSRFID1.DataEventEnabled = true;
         }
-        private async void showInfo(String new_code)
+        private async Task showInfoAsync(String new_code)
         {
             API_odoo api = new API_odoo();
             if (Program.mainForm.Ischeckin)
             {
-                if (!GlobalData.list_rfid_checkin.Contains(new_code))
+                if (!GlobalVariables.list_rfid_checkin.Contains(new_code))
                 {
                     //interval_rfid.Add(new_code);
                     //countKeepTag = DateTime.Now;
                     // GlobalData.list_rfid_checkin.Add(rfid);
-                    String image_checkin = GlobalData.cam_check.GetImage();
+                    String image_checkin = GlobalVariables.cam_check.GetImage();
+
                     Console.WriteLine(image_checkin);
                     //String image_checkin = GlobalData.Cam1.GetImage();
                     string dateTime_checkin = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
@@ -118,11 +119,11 @@ namespace WEBPOS_RFIDSender.OposControl
                     {
                        // interval_rfid.Add(new_code);
                         infoEmp = await api.APIGetInfoEmployee(GlobalVariables.url_Odoo, GlobalVariables.url_api_Employee, new_code);
-                        GlobalData.list_rfid_checkout.Remove(new_code);
-                        GlobalData.list_rfid_checkin.Add(new_code);
+                        GlobalVariables.list_rfid_checkout.Remove(new_code);
+                        GlobalVariables.list_rfid_checkin.Add(new_code);
                         Update_Info_Now_Checkin(infoEmp, dateTime_checkin);
                         Update_Info_Recently_CheckINCheckOUT(infoEmp);
-                        Program.mainForm.pictureBoxNowCheckin.Image = GlobalData.cam_check.stringToImage(image_checkin);
+                        Program.mainForm.pictureBoxNowCheckin.Image = GlobalVariables.cam_check.stringToImage(image_checkin);
                         //  ShowInfo_Object.pictureBox_now_Checkin.Image = GlobalData.Cam1.stringToImage(image_checkin);
                         Program.mainForm.notice.ForeColor = Color.DarkGreen;
                         Program.mainForm.notice.Text = string.Format("Good {0} {1}! Hope you have a good day!", time_session, infoEmp.name.Split(' ').ToList().Last());
@@ -130,7 +131,8 @@ namespace WEBPOS_RFIDSender.OposControl
                         Program.mainForm.textBoxNowCheckOut.Clear();
                     }
                     else if (message.Contains("Cannot create new attendance"))
-                    {
+                    {   
+
 
                         Program.mainForm.pictureBoxNowCheckin.Image = null;
                         Program.mainForm.textBoxTimeNowCheckIn.Clear();
@@ -157,45 +159,41 @@ namespace WEBPOS_RFIDSender.OposControl
                         Program.mainForm.notice.Text = " Api error";
                     }
                 }
-/*                else
+                else
                 {
-                    TimeSpan timeKeepTag = DateTime.Now.Subtract(countKeepTag);
-                    Console.WriteLine("check ");
-                    Console.WriteLine(timeKeepTag);
-                    Console.WriteLine(timeToRemoveTagKeeping);
+                    /*                    TimeSpan timeKeepTag = DateTime.Now.Subtract(countKeepTag);
+                                        Console.WriteLine("check ");
+                                        Console.WriteLine(timeKeepTag);
+                                        Console.WriteLine(timeToRemoveTagKeeping);*/
 
-                    if (timeKeepTag.TotalSeconds >= timeToRemoveTagKeeping)
-                    {
-                        ShowInfo_Object.ClearAll();
-                        ShowInfo_Object.notice.Text = "You have checked-in already";
-                        GlobalData.list_rfid_checkin.Remove(new_code);
-                    }
-                }*/
+                    /* if (timeKeepTag.TotalSeconds >= timeToRemoveTagKeeping)
+                     {*/
+                        //Program.mainForm.ClearAllinfo();
+                        Program.mainForm.notice.Text = "You have checked-in already";
+                        GlobalVariables.list_rfid_checkin.Remove(new_code);
+                   /* }*/
+                }
             }
             else
             {
-                if (!GlobalData.list_rfid_checkout.Contains(new_code))
+                if (!GlobalVariables.list_rfid_checkout.Contains(new_code))
                 {
                     //isHaveNewTag = true;
                     //countKeepTag = DateTime.Now;
-                    String image_checkout = GlobalData.cam_check.GetImage();
+                    String image_checkout = GlobalVariables.cam_check.GetImage();
                     Console.WriteLine(image_checkout);
-                    //String image_checkout = GlobalData.Cam1.GetImage();
                     string dateTime_checkout = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                    // GlobalData.list_rfid_checkout.Add(rfid);
                     string message = await api.APICheckout(new_code, image_checkout, GlobalVariables.url_Odoo, GlobalVariables.url_checkout, dateTime_checkout);
                     if (message == "success")
                     {
-                       // interval_rfid.Add(new_code);
+
                         infoEmp = await api.APIGetInfoEmployee(GlobalVariables.url_Odoo, GlobalVariables.url_api_Employee, new_code);
-                        GlobalData.list_rfid_checkin.Remove(new_code);
-                        GlobalData.list_rfid_checkout.Add(new_code);
+                        GlobalVariables.list_rfid_checkin.Remove(new_code);
+                        GlobalVariables.list_rfid_checkout.Add(new_code);
                         Update_Info_Now_Checkout(infoEmp, dateTime_checkout);
                         Update_Info_Recently_CheckINCheckOUT(infoEmp);
-                        Program.mainForm.pictureBoxNowCheckout.Image = GlobalData.cam_check.stringToImage(image_checkout);
-                        // ShowInfo_Object.pictureBox_now_Checkout.Image = GlobalData.Cam1.stringToImage(image_checkout);
+                        Program.mainForm.pictureBoxNowCheckout.Image = GlobalVariables.cam_check.stringToImage(image_checkout);
                         Program.mainForm.notice.ForeColor = Color.DarkGreen;
-                        //ShowInfo_Object.panel3.BackColor = Color.Aquamarine;
                         Program.mainForm.notice.Text = string.Format("Goodbye {0}! Thanks for your hardwork!", infoEmp.name.Split(' ').ToList().Last());
                         Program.mainForm.pictureBoxNowCheckin.Image = null;
 
@@ -221,23 +219,25 @@ namespace WEBPOS_RFIDSender.OposControl
                     }
 
                 }
-/*                else
+                else
                 {
-                    TimeSpan timeKeepTag = DateTime.Now.Subtract(countKeepTag);
+/*                    TimeSpan timeKeepTag = DateTime.Now.Subtract(countKeepTag);
                     Console.WriteLine("check ");
                     Console.WriteLine(timeKeepTag);
                     Console.WriteLine(timeToRemoveTagKeeping);
 
                     if (timeKeepTag.TotalSeconds >= timeToRemoveTagKeeping)
-                    {
-                        ShowInfo_Object.ClearAll();
-                        ShowInfo_Object.notice.Text = "You have checked-out already";
-                        GlobalData.list_rfid_checkout.Remove(new_code);
-                    }
-                }*/
+                    {*/
+                        //Program.mainForm.ClearAllinfo();
+                        Program.mainForm.notice.Text = "You have checked-out already";
+                        GlobalVariables.list_rfid_checkout.Remove(new_code);
+/*                    }*/
+                }
             }
 
         }
+
+
         void Update_Info_Now_Checkin(API_odoo.MyResponse infoEmp, string dateTime_checkin)
         {
             Program.mainForm.textBoxName.Text = infoEmp.name;
@@ -256,7 +256,7 @@ namespace WEBPOS_RFIDSender.OposControl
                 string image = infoEmp.avatar;
                 Char[] listTrim = { 'b', '\'' };
                 image = image.Trim(listTrim);
-                Program.mainForm.pictureBoxInfo.Image = GlobalData.cam_check.stringToImage(image);
+                Program.mainForm.pictureBoxInfo.Image = GlobalVariables.cam_check.stringToImage(image);
             }
 
         }
@@ -276,7 +276,7 @@ namespace WEBPOS_RFIDSender.OposControl
                 string image = infoEmp.avatar;
                 Char[] listTrim = { 'b', '\'' };
                 image = image.Trim(listTrim);
-                Program.mainForm.pictureBoxInfo.Image = GlobalData.cam_check.stringToImage(image);
+                Program.mainForm.pictureBoxInfo.Image = GlobalVariables.cam_check.stringToImage(image);
             }
             //  ShowInfo_Object.avatar.Image = GlobalData.Cam1.stringToImage(image);
 
@@ -291,12 +291,12 @@ namespace WEBPOS_RFIDSender.OposControl
             Program.mainForm.textBoxTimeLastCheckOut.Text = infoEmp.last_checkout;
             if (image_checkin != "False")
             {
-                Program.mainForm.pictureBoxLastCheckIn.Image = GlobalData.cam_check.stringToImage(image_checkin);
+                Program.mainForm.pictureBoxLastCheckIn.Image = GlobalVariables.cam_check.stringToImage(image_checkin);
 
             }
             if (image_checkout != "False")
             {
-                Program.mainForm.pictureBoxLastCheckOut.Image = GlobalData.cam_check.stringToImage(image_checkout);
+                Program.mainForm.pictureBoxLastCheckOut.Image = GlobalVariables.cam_check.stringToImage(image_checkout);
 
             }
 
@@ -312,19 +312,19 @@ namespace WEBPOS_RFIDSender.OposControl
             Program.mainForm.textBoxTimeLastCheckOut.Text = infoEmp.last_checkout;
             if (image_checkin != "False")
             {
-                Program.mainForm.pictureBoxLastCheckIn.Image = GlobalData.cam_check.stringToImage(image_checkin);
+                Program.mainForm.pictureBoxLastCheckIn.Image = GlobalVariables.cam_check.stringToImage(image_checkin);
 
             }
             if (image_checkout != "False")
             {
-                Program.mainForm.pictureBoxLastCheckOut.Image = GlobalData.cam_check.stringToImage(image_checkout);
+                Program.mainForm.pictureBoxLastCheckOut.Image = GlobalVariables.cam_check.stringToImage(image_checkout);
             }
             if (infoEmp.avatar != "False")
             {
                 string image = infoEmp.avatar;
                 Char[] listTrim = { 'b', '\'' };
                 image = image.Trim(listTrim);
-                Program.mainForm.pictureBoxInfo.Image = GlobalData.cam_check.stringToImage(image);
+                Program.mainForm.pictureBoxInfo.Image = GlobalVariables.cam_check.stringToImage(image);
             }
         }
 
@@ -446,7 +446,7 @@ namespace WEBPOS_RFIDSender.OposControl
             else
             {
                 GlobalVariables.OPOSStatus = "READING";
-                Program.mainForm.infoLog.Invoke(new Action(() => Program.mainForm.infoLog.Text += ">>> START READING RFID\r\n"));
+                //Program.mainForm.infoLog.Invoke(new Action(() => Program.mainForm.infoLog.Text += ">>> START READING RFID\r\n"));
             }
 
 
@@ -489,7 +489,7 @@ namespace WEBPOS_RFIDSender.OposControl
             }
             else
             {
-                Program.mainForm.infoLog.Invoke(new Action(() => Program.mainForm.infoLog.Text += ">>> STOP READING RFID\r\n"));
+                //Program.mainForm.infoLog.Invoke(new Action(() => Program.mainForm.infoLog.Text += ">>> STOP READING RFID\r\n"));
                 GlobalVariables.OPOSStatus = "STOPPING";
             }
         }

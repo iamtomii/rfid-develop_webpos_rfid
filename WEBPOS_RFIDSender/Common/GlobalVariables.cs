@@ -313,24 +313,15 @@ namespace WEBPOS_RFIDSender.Common
         public static uint MOUSE_LEFTUP = 0x0202;
         public static uint MOUSE_PARAM_LBUTTON = 0x1;
 
-        public static POINT click_confirm = new POINT(784, 720);
-        public static POINT click_reset = new POINT(965, 395);
-        public static POINT click_男性_45_54 = new POINT(285, 620);
-        public static POINT click_男性_35_44 = new POINT(205, 620);
-        public static POINT click_男性_25_34 = new POINT(125, 620);
-        public static POINT click_男性_15_24 = new POINT(45, 620);
-
-        public static POINT click_女性_45_54 = new POINT(285, 665);
-        public static POINT click_女性_35_44 = new POINT(205, 665);
-        public static POINT click_女性_25_34 = new POINT(125, 665);
-        public static POINT click_女性_15_24 = new POINT(45, 665);
-        public static POINT click_payment = new POINT(940, 630);
-        public static POINT click_finish = new POINT(940, 710);
-        public static POINT click_close_dialog = new POINT(160, 440);
-        public static POINT click_CARDNET = new POINT(223, 705);
 
         public static List<string> rfid_code = new List<string>();
 
+        // 2022-01-12: check interval list 
+        public static List<string> interval_rfid = new List<string>(); 
+        public static int count_list;
+        public static CameraController cam_check = null;
+        public static List<string> list_rfid_checkin = new List<string>();
+        public static List<string> list_rfid_checkout = new List<string>();
         //new click for eMoney and Credit card
         public static List<ProductJAN> list_rfid = new List<ProductJAN>();
 

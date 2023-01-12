@@ -163,8 +163,115 @@ namespace WEBPOS_RFIDSender
             }
             return combinedPath1;
         }
+        public String stringToImage1(string inputString)
+        {
+            Image image = new Bitmap(100, 1000);
+            String signal = "";
 
-        public void queyFrame()
+            if (string.IsNullOrEmpty(inputString))
+            {
+                return signal;
+            }
+
+            byte[] bytes = Convert.FromBase64String(inputString);
+
+            // byte[] bytes = Convert.FromBase64String(inputString);
+            // Image image = new Bitmap(200, 200);
+
+
+            //  byte[] imageBytes = Convert.FromBase64String(inputString);
+            //Convert byte[] to Image
+            /*using (var ms = new MemoryStream(imageBytes, 0, imageBytes.Length))
+            {
+                image = Image.FromStream(ms, true, true);
+                return image;
+            }*/
+
+            using (MemoryStream ms = new MemoryStream(bytes, 0, bytes.Length))
+            {
+                ms.Write(bytes, 0, bytes.Length);
+                image = Image.FromStream(ms, true, true);
+                return signal;
+            }
+
+
+
+
+        }
+
+        public string returnpicture()
+        {
+            Mat currentFrame = new Mat();
+            string base64String;
+            currentFrame = capture.RetrieveMat();
+
+            //try
+            //{
+            //    currentFrame = capture.QueryFrame();
+            //    int i = 3;
+
+            //    while (i > 0)
+            //    {
+            //        if (currentFrame == null)
+            //        {
+            //            currentFrame = capture.QueryFrame();
+            //            i--;
+            //        }
+            //        else
+            //        {
+            //            break;
+            //        }
+            //    }
+            //}
+            //catch(Exception e){
+            //    Console.WriteLine("CAMERA EXCEPTION: "+e);
+
+            //}
+
+            if (!currentFrame.Empty())
+            {
+                Bitmap saveImage = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(currentFrame);
+
+                System.IO.MemoryStream stream = new MemoryStream();
+                saveImage.Save(stream, System.Drawing.Imaging.ImageFormat.Bmp);
+
+                byte[] imageBytes = stream.ToArray();
+                base64String = Convert.ToBase64String(imageBytes);
+                //DateTime time1 = DateTime.Now;
+                //  saveImage.Save(time1.ToString("yyyyMMdd-HH:mm:ss") + ".png");
+            }
+            else
+            {
+
+                Image saveImageLoad = Image.FromFile("Resource_RFID/error.png");
+                byte[] imageBytes = imgToByteArray(saveImageLoad);
+                base64String = Convert.ToBase64String(imageBytes);
+            }
+            Image image = new Bitmap(100, 1000);
+            byte[] bytes = Convert.FromBase64String(base64String);
+
+            // byte[] bytes = Convert.FromBase64String(inputString);
+            // Image image = new Bitmap(200, 200);
+
+
+            //  byte[] imageBytes = Convert.FromBase64String(inputString);
+            //Convert byte[] to Image
+            /*using (var ms = new MemoryStream(imageBytes, 0, imageBytes.Length))
+            {
+                image = Image.FromStream(ms, true, true);
+                return image;
+            }*/
+
+            using (MemoryStream ms = new MemoryStream(bytes, 0, bytes.Length))
+            {
+                ms.Write(bytes, 0, bytes.Length);
+                image = Image.FromStream(ms, true, true);
+                return "0";
+            }
+
+            return "0";
+        }
+            public void queyFrame()
         {
             while (true)
             {

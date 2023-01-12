@@ -7,6 +7,8 @@ using System.Windows.Forms;
 using WEBPOS_RFIDSender.Common;
 using WEBPOS_RFIDSender.StateModel;
 using System.Drawing;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace WEBPOS_RFIDSender
 {
@@ -30,11 +32,11 @@ namespace WEBPOS_RFIDSender
         {
             if (Ischeckin)
             {
-                this.label5.Text = "CHECK-IN";
+                this.label4.Text = "CHECK-IN";
             }
             else
             {
-                this.label5.Text = "CHECK-OUT";
+                this.label4.Text = "CHECK-OUT";
             }
             Process[] processes = Process.GetProcessesByName("WEBPOS_RFIDSender");
             if (processes.Length > 1)
@@ -46,20 +48,31 @@ namespace WEBPOS_RFIDSender
             //AppStarting waitForm = new AppStarting();
             //waitForm.ShowDialog();
 
-            appActiving = true;
             CommonFunction.readConfigFile();
             GlobalVariables.staticTitle = OCRText.getTileStatic_Image("TitleState");
 
   
 
-            Program.mainForm.infoLog.Text += ">>> WEBPOS is detected!\r\n";
+            //Program.mainForm.infoLog.Text += ">>> WEBPOS is detected!\r\n";
             
 
             GlobalVariables.OPOSRFID1.CreateControl();
             GlobalVariables.opos.OPOS_EnableDevice(GlobalVariables.OPOSRFID1, GlobalVariables.device_name);
 
-            statusContent.Text = "ACTIVING";
+            //statusContent.Text = "ACTIVING";
             WindowState = FormWindowState.Maximized;
+            GlobalVariables.opos.OPOS_StartReading(GlobalVariables.OPOSRFID1, GlobalVariables.rT);
+            appActiving = true;
+            if (GlobalVariables.cam_check == null)
+            {
+                GlobalVariables.cam_check = new CameraController();
+                GlobalVariables.cam_check.StreamVideo("0");
+
+            }
+            Task.Run(() => CheckRFIDRemoved());
+            Task.Run(() => playVideo());
+
+
         }
 
         private void OPOSRFID1_DataEvent_Test(object sender, AxOPOSRFIDLib._DOPOSRFIDEvents_DataEventEvent e)
@@ -79,12 +92,12 @@ namespace WEBPOS_RFIDSender
             {
                 Thread.Sleep(1000);
                 Console.WriteLine(">>> No WEBPOS detected!");
-                Program.mainForm.infoLog.Text += ">>> No WEBPOS detected!\r\n";
+                //Program.mainForm.infoLog.Text += ">>> No WEBPOS detected!\r\n";
                 WEBPOSis_detected = CommonFunction.GetWebPOSScreen();
             }
 
             Console.WriteLine(">>> WEBPOS is detected!");
-            Program.mainForm.infoLog.Text += ">>> WEBPOS is detected!\r\n";
+            //Program.mainForm.infoLog.Text += ">>> WEBPOS is detected!\r\n";
 
             GlobalVariables.OPOSRFID1.CreateControl();
             GlobalVariables.opos.OPOS_EnableDevice(GlobalVariables.OPOSRFID1, GlobalVariables.device_name);
@@ -98,63 +111,95 @@ namespace WEBPOS_RFIDSender
                 writer.WriteLine(data);
             }
         }
-        private Task Worker()
-        {   
+        private async Task playVideo()
+        {
             while (true)
             {
-                //Console.WriteLine("Task Running....");
-                //if (isProcessClosed("AIR_START"))
+                try { 
+                   GlobalVariables.cam_check.GetImageBitmap(); 
+                } catch(Exception e)
+                {
+                   
+                }
+                
+                await Task.Delay(500);
+            }
+        }
+        private Task CheckRFIDRemoved()
+        {
+            int countTime = 0;
+            
+            while (true)
+            {
+
+                Console.WriteLine("====================================");
+                printList(GlobalVariables.rfid_code);
+                printList(GlobalVariables.interval_rfid);
+                Console.WriteLine("====================================");
+                //if ()
                 //{
-                //    if (GlobalVariables.OPOSStatus == "READING")
-                //    {
-                //        GlobalVariables.opos.OPOS_StopReading(GlobalVariables.OPOSRFID1);
-                //    }
-                //    GlobalVariables.opos.OPOS_DisableDevice(GlobalVariables.OPOSRFID1);
-                //    GlobalVariables.list_rfid.Clear();
-                //    GlobalVariables.rfid_code.Clear();
-                //    appActiving = false;
-                //    statusContent.Text = "DISABLE";
 
-                //    //Task.Run(() => WaitPOS());
                 //}
-
-                string working_window = OCRText.GetWorkingTitle();
-                switch (working_window)
+                
+                if (countTime == 5)
                 {
-                    case "会員/客層入力":                       
-                        if (GlobalVariables.OPOSStatus.Equals("READING") && appActiving == true)
+                    try
+                    {
+                        foreach (string rfid in GlobalVariables.rfid_code)
                         {
-                            GlobalVariables.opos.OPOS_StopReading(GlobalVariables.OPOSRFID1);
-                            Console.WriteLine("PRESCAN_INIT: " + working_window);
+                            if (!GlobalVariables.interval_rfid.Contains(rfid))
+                            {
+
+                                Console.WriteLine(string.Format("RFID {0} is removed!", rfid));
+                                GlobalVariables.rfid_code.Remove(rfid);
+                                countTime = 0;
+                                GlobalVariables.count_list = 0;
+                                Invoke(new Action(() =>
+                                {
+                                    ClearAllinfo();
+                                }));
+                                
+                            }
                         }
-                        GlobalVariables.list_rfid.Clear();
-                        GlobalVariables.rfid_code.Clear();
-                        break;
-                    case "商品登録":
-                        if (GlobalVariables.OPOSStatus.Equals("STOPPING") && appActiving == true)
-                        {
-                            GlobalVariables.opos.OPOS_StartReading(GlobalVariables.OPOSRFID1, GlobalVariables.rT);
-                            Console.WriteLine("SCAN_INIT: " + working_window);
-                        }
-                        break;
-                    case "個数修正":
-                        break;
-                    case "現金入力":
-                        if (GlobalVariables.OPOSStatus.Equals("READING") && appActiving == true)
-                        {
-                            GlobalVariables.opos.OPOS_StopReading(GlobalVariables.OPOSRFID1);
-                            Console.WriteLine("PAYMENT_INIT: " + working_window);
-                        }
-                        break;
-                    default:
-                        break;
+                    }
+                    catch (Exception e) {
+                       // Console.WriteLine(e);
+                    }
+
                 }
 
-                if (!appActiving)
+                else
                 {
-                    return null;
+                    GlobalVariables.rfid_code.Sort();
+                    GlobalVariables.interval_rfid.Sort();
+
+                    if (!GlobalVariables.rfid_code.SequenceEqual(GlobalVariables.interval_rfid))
+                    {
+                        if (GlobalVariables.count_list == GlobalVariables.rfid_code.Count())
+                        {
+                            countTime++;
+                        }
+                        else
+                        {
+                            GlobalVariables.count_list = GlobalVariables.rfid_code.Count();
+                            countTime = 0;
+                        }
+                        
+                        
+                    }
+                    else
+                    {
+                        countTime = 0;
+                        
+                    }
+
+                    
                 }
 
+                GlobalVariables.interval_rfid.Clear();
+
+                Console.WriteLine(countTime);
+                Thread.Sleep(1000);
             }
         }
 
@@ -164,7 +209,7 @@ namespace WEBPOS_RFIDSender
             {
                 if (!isProcessClosed("AIR_START"))
                 {
-                    statusContent.Text = "ACTIVING";
+                    //statusContent.Text = "ACTIVING";
                     appActiving = true;
                     MainWorker();
                     return null;
@@ -192,21 +237,69 @@ namespace WEBPOS_RFIDSender
             GlobalVariables.opos.OPOS_StopReading(GlobalVariables.OPOSRFID1);
             GlobalVariables.list_rfid.Clear();
             GlobalVariables.rfid_code.Clear();
+            GlobalVariables.interval_rfid.Clear();
+            GlobalVariables.count_list=0;
 
-            /*Clear_NowCheckInOut();
-            Clear_YesterdayCheckInOut();*/
+
+            Clear_NowCheckInOut();
+            Clear_YesterdayCheckInOut();
+
+        }
+        public void ClearAllinfo()
+        {
+            textBoxName.Clear();
+            textBoxID.Clear();
+            textBoxDepartment.Clear();
+            pictureBoxInfo.Image = null;
+            notice.Text = "";
+            Clear_NowCheckInOut();
+            Clear_YesterdayCheckInOut();
+
+        }
+        public void Clear_NowCheckInOut()
+        {
+
+            //checkinClear
+
+            textBoxTimeNowCheckIn.Clear();
+
+            pictureBoxNowCheckin.Image = null;
+
+            //checkoutClear
+
+            textBoxNowCheckOut.Clear();
+
+            pictureBoxNowCheckout.Image = null;
+
+        }
+        public void Clear_YesterdayCheckInOut()
+        {
+            //checkinClear
+
+            textBoxTimeLastCheckIn.Clear();
+
+            pictureBoxLastCheckIn.Image = null;
+
+            //checkoutClear
+
+            textBoxTimeLastCheckOut.Clear();
+
+            pictureBoxLastCheckOut.Image = null;
+
 
         }
 
-        private void startBtn_Click(object sender, EventArgs e)
+/*        private void startBtn_Click(object sender, EventArgs e)
         {
             
                     GlobalVariables.opos.OPOS_StartReading(GlobalVariables.OPOSRFID1, GlobalVariables.rT);
                     appActiving = true;
+                    GlobalVariables.list_rfid.Clear();
+                    GlobalVariables.rfid_code.Clear();
 
-        }
+        }*/
 
-        private void stopBtn_Click(object sender, EventArgs e)
+/*        private void stopBtn_Click(object sender, EventArgs e)
         {
 
                GlobalVariables.opos.OPOS_StopReading(GlobalVariables.OPOSRFID1);
@@ -215,7 +308,7 @@ namespace WEBPOS_RFIDSender
                appActiving = false;
 
         }
-
+*/
         private bool isProcessClosed(string process_name)
         {
             Process[] processes = Process.GetProcessesByName(process_name);
@@ -229,10 +322,10 @@ namespace WEBPOS_RFIDSender
             }
         }
 
-        private void infoLog_TextChanged(object sender, EventArgs e)
-        {
+        //private void infoLog_TextChanged(object sender, EventArgs e)
+        //{
 
-        }
+        //}
 
         private void statusContent_TextChanged(object sender, EventArgs e)
         {
@@ -247,6 +340,14 @@ namespace WEBPOS_RFIDSender
             //        stopBtn.Enabled = false;
             //        break;
             //}
+        }
+
+        private void printList(List<string> list)
+        {
+            foreach (var item in list)
+            {
+                Console.WriteLine(item);
+            }
         }
 
         private void statusLB_Click(object sender, EventArgs e)
@@ -343,6 +444,7 @@ namespace WEBPOS_RFIDSender
                 Ischeckin = true;
                 this.label4.Text = "CHECK-IN";
                 this.label4.ForeColor = Color.DarkGreen;
+
                 GlobalVariables.opos.OPOS_StartReading(GlobalVariables.OPOSRFID1, GlobalVariables.rT);
 
             }
@@ -352,5 +454,40 @@ namespace WEBPOS_RFIDSender
         {
 
         }
+
+        private void panel2_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void label5_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void notice_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label4_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        //private void infoLog_TextChanged(object sender, EventArgs e)
+        //{
+
+        //}
+
+        //private void infoLog_TextChanged(object sender, EventArgs e)
+        //{
+
+        //}
+
+        //private void infoLog_TextChanged(object sender, EventArgs e)
+        //{
+
+        //}
     }
 }

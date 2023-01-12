@@ -33,7 +33,6 @@ namespace WEBPOS_RFIDSender
                 //this.Show();
                 Thread.Sleep(1000);
                 Console.WriteLine("No WEBPOS detected!");
-                Program.mainForm.infoLog.Text += ">>> No WEBPOS detected!\r\n";
                 WEBPOSis_detected = CommonFunction.GetWebPOSScreen();
             }
 
