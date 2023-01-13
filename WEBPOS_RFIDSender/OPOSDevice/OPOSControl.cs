@@ -16,6 +16,8 @@ using WEBPOS_RFIDSender.OPOSDevice;
 using WEBPOS_RFIDSender.WinAPI;
 using System.Drawing;
 using Newtonsoft.Json;
+using System.Speech.Synthesis;
+using System.Xml.Linq;
 
 namespace WEBPOS_RFIDSender.OposControl
 {
@@ -36,6 +38,7 @@ namespace WEBPOS_RFIDSender.OposControl
     {
         API_odoo.MyResponse infoEmp = new API_odoo.MyResponse();
         private bool IsFlush = false;
+        CheckCreateNewForm checkdialog = new CheckCreateNewForm();
 
         public OPOS()
         {
@@ -143,18 +146,25 @@ namespace WEBPOS_RFIDSender.OposControl
                     }
                     else if (message.Contains("Can not find employee"))
                     {
+                           
                         if (Program.mainForm.pictureBoxInfo != null)
                         {
-                            Program.mainForm.ClearAll();
+                            Program.mainForm.ClearAllinfo();
                         }
                         Program.mainForm.notice.ForeColor = Color.Crimson;
                         Program.mainForm.notice.Text = " Cannot find your information";
+                        checkdialog.RFID_exist = new_code;
+
+                        checkdialog.ShowDialog();
+
+
+
                     }
                     else
                     {
                         if (Program.mainForm.pictureBoxInfo != null)
                         {
-                            Program.mainForm.ClearAll();
+                            Program.mainForm.ClearAllinfo();
                         }
                         Program.mainForm.notice.Text = " Api error";
                     }
@@ -171,6 +181,8 @@ namespace WEBPOS_RFIDSender.OposControl
                         //Program.mainForm.ClearAllinfo();
                         Program.mainForm.notice.Text = "You have checked-in already";
                         GlobalVariables.list_rfid_checkin.Remove(new_code);
+                        GlobalVariables.rfid_code.Remove(new_code);
+                        GlobalVariables.interval_rfid.Remove(new_code);
                    /* }*/
                 }
             }
@@ -195,9 +207,8 @@ namespace WEBPOS_RFIDSender.OposControl
                         Program.mainForm.pictureBoxNowCheckout.Image = GlobalVariables.cam_check.stringToImage(image_checkout);
                         Program.mainForm.notice.ForeColor = Color.DarkGreen;
                         Program.mainForm.notice.Text = string.Format("Goodbye {0}! Thanks for your hardwork!", infoEmp.name.Split(' ').ToList().Last());
-                        Program.mainForm.pictureBoxNowCheckin.Image = null;
-
                         Program.mainForm.textBoxTimeNowCheckIn.Clear();
+                        Program.mainForm.pictureBoxNowCheckin.Image = null;
                     }
                     else if (message.Contains("Employee already checked-out"))
                     {
@@ -231,13 +242,28 @@ namespace WEBPOS_RFIDSender.OposControl
                         //Program.mainForm.ClearAllinfo();
                         Program.mainForm.notice.Text = "You have checked-out already";
                         GlobalVariables.list_rfid_checkout.Remove(new_code);
-/*                    }*/
+                        GlobalVariables.rfid_code.Remove(new_code);
+                        GlobalVariables.interval_rfid.Remove(new_code);
+                    /*                    }*/
                 }
             }
 
         }
 
 
+        void speak_checkin(API_odoo.MyResponse infoEmp)
+        {
+            var synthesizer = new SpeechSynthesizer();
+            synthesizer.SetOutputToDefaultAudioDevice();
+            synthesizer.Speak("Hello" + infoEmp.name + "Hope you have a good day");
+        }
+
+        void speak_checkout(API_odoo.MyResponse infoEmp)
+        {
+            var synthesizer = new SpeechSynthesizer();
+            synthesizer.SetOutputToDefaultAudioDevice();
+            synthesizer.Speak("Goodbye" + infoEmp.name + "Thanks for your hardwork!");
+        }
         void Update_Info_Now_Checkin(API_odoo.MyResponse infoEmp, string dateTime_checkin)
         {
             Program.mainForm.textBoxName.Text = infoEmp.name;

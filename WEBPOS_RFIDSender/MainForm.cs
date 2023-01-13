@@ -58,6 +58,9 @@ namespace WEBPOS_RFIDSender
 
             GlobalVariables.OPOSRFID1.CreateControl();
             GlobalVariables.opos.OPOS_EnableDevice(GlobalVariables.OPOSRFID1, GlobalVariables.device_name);
+            Console.WriteLine("check"+GlobalVariables.OPOSRFID1.PowerState);
+            Console.WriteLine("check"+GlobalVariables.OPOSRFID1.PowerNotify);
+            Console.WriteLine("check"+GlobalVariables.OPOSRFID1.CapPowerReporting);
 
             //statusContent.Text = "ACTIVING";
             WindowState = FormWindowState.Maximized;
@@ -71,6 +74,7 @@ namespace WEBPOS_RFIDSender
             }
             Task.Run(() => CheckRFIDRemoved());
             Task.Run(() => playVideo());
+            Task.Run(() => CheckHour());
 
 
         }
@@ -140,7 +144,7 @@ namespace WEBPOS_RFIDSender
                 //{
 
                 //}
-                
+             
                 if (countTime == 5)
                 {
                     try
@@ -152,13 +156,13 @@ namespace WEBPOS_RFIDSender
 
                                 Console.WriteLine(string.Format("RFID {0} is removed!", rfid));
                                 GlobalVariables.rfid_code.Remove(rfid);
-                                countTime = 0;
                                 GlobalVariables.count_list = 0;
+                                countTime = 0;
                                 Invoke(new Action(() =>
                                 {
                                     ClearAllinfo();
                                 }));
-                                
+
                             }
                         }
                     }
@@ -175,28 +179,24 @@ namespace WEBPOS_RFIDSender
 
                     if (!GlobalVariables.rfid_code.SequenceEqual(GlobalVariables.interval_rfid))
                     {
-                        if (GlobalVariables.count_list == GlobalVariables.rfid_code.Count())
-                        {
-                            countTime++;
-                        }
-                        else
+                        if (!(GlobalVariables.rfid_code.Count()== GlobalVariables.count_list))
                         {
                             GlobalVariables.count_list = GlobalVariables.rfid_code.Count();
                             countTime = 0;
                         }
-                        
+                        countTime++;
                         
                     }
                     else
                     {
                         countTime = 0;
-                        
                     }
 
                     
                 }
 
                 GlobalVariables.interval_rfid.Clear();
+                
 
                 Console.WriteLine(countTime);
                 Thread.Sleep(1000);
@@ -214,6 +214,35 @@ namespace WEBPOS_RFIDSender
                     MainWorker();
                     return null;
                 }
+            }
+        }
+        private async Task CheckHour()
+        {
+            while (true)
+            {
+                Invoke(new Action(() =>
+                {
+                    Check_Hour();
+                }));
+                
+
+                await Task.Delay(600000);
+            }
+        }
+        void Check_Hour()
+        {
+            int hour = Int16.Parse(DateTime.Now.ToString("HH"));
+            if (hour < 20)
+            {
+                Ischeckin = true;
+/*                this.checkin_pictureBox.Load(string.Format("Images/{0}.png", "Checkin"));*/
+                label4.Text = "CHECK-IN";
+            }
+            else
+            {
+                Ischeckin = false;
+                /*this.checkin_pictureBox.Load(string.Format("Images/{0}.png", "Checkout"));*/
+                label4.Text = "CHECK-OUT";
             }
         }
 
@@ -256,6 +285,15 @@ namespace WEBPOS_RFIDSender
             Clear_YesterdayCheckInOut();
 
         }
+        public void ClearNotice()
+        {
+            if (!(notice.Text == null))
+            {
+                Thread.Sleep(2000);
+                notice.Text = "";
+            }
+        }
+
         public void Clear_NowCheckInOut()
         {
 
@@ -471,6 +509,11 @@ namespace WEBPOS_RFIDSender
         }
 
         private void label4_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void mainTitle_Click(object sender, EventArgs e)
         {
 
         }

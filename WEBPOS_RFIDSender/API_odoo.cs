@@ -93,5 +93,29 @@ namespace WEBPOS_RFIDSender
 
 
         }
+        public async Task<string> APICreateNewRFIDEMployee(string id, string rfid,string url_Odoo, string url_createnew)
+        {
+            string ret;
+            HttpClient api_client = new HttpClient();
+            api_client.BaseAddress = new Uri(url_Odoo);
+            api_client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            string json = System.Text.Json.JsonSerializer.Serialize(new { id = id, rfid = rfid });
+            var content=new StringContent(json,Encoding.UTF8, "application/json");
+            var result = await api_client.PostAsync(url_createnew, content);
+            string resultContent=await result.Content.ReadAsStringAsync();
+            JObject obj = JObject.Parse(resultContent);
+            if (obj.ContainsKey("result"))
+            {
+                ret = obj["result"].ToString();
+            }
+            else
+            {
+                string message = obj["error"]["data"].ToString();
+                ret = message;
+            }
+            return ret;
+        }
     }
+
 }
+

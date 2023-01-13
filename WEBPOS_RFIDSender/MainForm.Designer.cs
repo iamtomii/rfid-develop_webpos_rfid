@@ -116,6 +116,7 @@ namespace WEBPOS_RFIDSender
             this.mainTitle.Size = new System.Drawing.Size(382, 60);
             this.mainTitle.TabIndex = 51;
             this.mainTitle.Text = "Employee Manage";
+            this.mainTitle.Click += new System.EventHandler(this.mainTitle_Click);
             // 
             // pictureBox2
             // 

@@ -161,6 +161,7 @@
     <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
     </Reference>
+    <Reference Include="System.Messaging" />
     <Reference Include="System.Net" />
     <Reference Include="System.Net.Http, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Net.Http.4.3.0\lib\net46\System.Net.Http.dll</HintPath>
@@ -235,6 +236,7 @@
       <HintPath>..\packages\System.Security.Principal.Windows.5.0.0\lib\net461\System.Security.Principal.Windows.dll</HintPath>
     </Reference>
     <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Speech" />
     <Reference Include="System.Text.Encodings.Web, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Text.Encodings.Web.6.0.0\lib\net461\System.Text.Encodings.Web.dll</HintPath>
     </Reference>
@@ -278,6 +280,12 @@
     </Compile>
     <Compile Include="CameraController.cs" />
     <Compile Include="Check.cs" />
+    <Compile Include="CheckCreateNewForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CheckCreateNewForm.Designer.cs">
+      <DependentUpon>CheckCreateNewForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Common\CommonFunction.cs" />
     <Compile Include="Common\GlobalVariables.cs" />
     <Compile Include="Common\POINT.cs" />
@@ -296,6 +304,9 @@
     <Compile Include="WinAPI\WindowAPI.cs" />
     <EmbeddedResource Include="AppStarting.resx">
       <DependentUpon>AppStarting.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CheckCreateNewForm.resx">
+      <DependentUpon>CheckCreateNewForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>

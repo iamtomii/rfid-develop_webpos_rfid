@@ -74,3 +74,4 @@ C:\RFID\rfid\rfid-develop_webpos_rfid\rfid-develop_webpos_rfid\WEBPOS_RFIDSender
 C:\RFID\rfid\rfid-develop_webpos_rfid\rfid-develop_webpos_rfid\WEBPOS_RFIDSender\obj\Release\WEBPOS_RFIDSender.csproj.CopyComplete
 C:\RFID\rfid\rfid-develop_webpos_rfid\rfid-develop_webpos_rfid\WEBPOS_RFIDSender\obj\Release\WEBPOS_RFIDSender.exe
 C:\RFID\rfid\rfid-develop_webpos_rfid\rfid-develop_webpos_rfid\WEBPOS_RFIDSender\obj\Release\WEBPOS_RFIDSender.pdb
+C:\RFID\rfid\rfid-develop_webpos_rfid\rfid-develop_webpos_rfid\WEBPOS_RFIDSender\obj\Release\WEBPOS_RFIDSender.CheckCreateNewForm.resources
