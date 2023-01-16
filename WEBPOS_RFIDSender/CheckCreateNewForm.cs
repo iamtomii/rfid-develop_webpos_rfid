@@ -16,7 +16,9 @@ namespace WEBPOS_RFIDSender
 {
     public partial class CheckCreateNewForm : Form
     {
-
+        showinfo showifo = new showinfo();
+        dialog dialogresult = new dialog();
+        API_odoo.InfoResponse infoEmpbyid = new API_odoo.InfoResponse();
         public string RFID_exist { get; set; }
         public CheckCreateNewForm(string RFID_exist)
         {
@@ -43,49 +45,36 @@ namespace WEBPOS_RFIDSender
             this.buttonNo.Text = "NO";
         }
 
-        private void textBoxID_TextChanged(object sender, EventArgs e)
+        private async void textBoxID_TextChanged(object sender, EventArgs e)
         {
+            textBoxID.Focus();
 
         }
 
         private async void buttonYes_Click(object sender, EventArgs e)
         {
+            Close();
             String text=textBoxID.Text;
             Console.WriteLine(text);
             API_odoo api = new API_odoo();
-            String message = await api.APICreateNewRFIDEMployee(text, RFID_exist,GlobalVariables.url_Odoo,GlobalVariables.url_createnew);
-
-            JObject obj = JObject.Parse(message);
-
-            if (!(obj.ContainsKey("debug")))
+            infoEmpbyid = await api.APIGetInfoEmployeebyID(GlobalVariables.url_Odoo,GlobalVariables.url_showinfo,text);
+            if (infoEmpbyid.code == "ok")
             {
-                Console.WriteLine(obj["name"].ToString());
-                String name = obj["name"].ToString();
-                noticecreate.Text = "RFID is created with employee " + name;
-
-                inputtext.Visible = false;
-                buttonYes.Visible = false;
-                textBoxID.Visible = false;
-
-                buttonNo.Text = "OK";
-
-
-
-
+                showifo.Name = infoEmpbyid.name;
+                showifo.ID = infoEmpbyid.ID;
+                showifo.deparment = infoEmpbyid.department;
+                showifo.avatar= infoEmpbyid.avatar;
+                showifo.RFID = RFID_exist;
+                showifo.PIN = text;
+                showifo.ShowDialog();
+                
             }
             else
             {
-                Console.WriteLine(obj.ToString());
-                String error = "Can not create! \n" + obj["message"].ToString();
-                noticecreate.Text = error;
-                inputtext.Visible = false;
-                buttonYes.Visible = false;
-                textBoxID.Visible = false;
-                buttonNo.Text = "OK";
-
+                String tatustext = infoEmpbyid.code;
+                dialogresult.tatustext= tatustext;
+                dialogresult.ShowDialog();
             }
-
-
         }
 
         private void buttonNo_Click(object sender, EventArgs e)

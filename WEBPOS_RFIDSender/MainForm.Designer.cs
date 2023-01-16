@@ -67,6 +67,7 @@ namespace WEBPOS_RFIDSender
             this.pictureBoxNowCheckin = new System.Windows.Forms.PictureBox();
             this.pictureBoxLastCheckIn = new System.Windows.Forms.PictureBox();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.pictureBoxmute = new System.Windows.Forms.PictureBox();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.panelInfo.SuspendLayout();
@@ -80,6 +81,7 @@ namespace WEBPOS_RFIDSender
             this.panel5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxNowCheckin)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLastCheckIn)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxmute)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
@@ -93,6 +95,7 @@ namespace WEBPOS_RFIDSender
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(1784, 130);
             this.panel1.TabIndex = 6;
+            this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
             // 
             // notice
             // 
@@ -131,6 +134,7 @@ namespace WEBPOS_RFIDSender
             // panelInfo
             // 
             this.panelInfo.BackColor = System.Drawing.Color.GhostWhite;
+            this.panelInfo.Controls.Add(this.pictureBoxmute);
             this.panelInfo.Controls.Add(this.hightLight_Btn);
             this.panelInfo.Controls.Add(this.textBoxDepartment);
             this.panelInfo.Controls.Add(this.textBoxID);
@@ -150,7 +154,7 @@ namespace WEBPOS_RFIDSender
             // 
             this.hightLight_Btn.BackColor = System.Drawing.Color.DarkTurquoise;
             this.hightLight_Btn.Controls.Add(this.pictureBoxCheckin);
-            this.hightLight_Btn.Location = new System.Drawing.Point(99, 569);
+            this.hightLight_Btn.Location = new System.Drawing.Point(120, 542);
             this.hightLight_Btn.Name = "hightLight_Btn";
             this.hightLight_Btn.Size = new System.Drawing.Size(165, 117);
             this.hightLight_Btn.TabIndex = 8;
@@ -162,6 +166,7 @@ namespace WEBPOS_RFIDSender
             this.pictureBoxCheckin.Location = new System.Drawing.Point(16, 16);
             this.pictureBoxCheckin.Name = "pictureBoxCheckin";
             this.pictureBoxCheckin.Size = new System.Drawing.Size(134, 90);
+            this.pictureBoxCheckin.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxCheckin.TabIndex = 0;
             this.pictureBoxCheckin.TabStop = false;
             this.pictureBoxCheckin.Click += new System.EventHandler(this.pictureBoxCheckin_Click);
@@ -210,7 +215,7 @@ namespace WEBPOS_RFIDSender
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Tahoma", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label4.ForeColor = System.Drawing.Color.DarkGreen;
-            this.label4.Location = new System.Drawing.Point(121, 525);
+            this.label4.Location = new System.Drawing.Point(147, 503);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(111, 24);
             this.label4.TabIndex = 4;
@@ -485,6 +490,16 @@ namespace WEBPOS_RFIDSender
             this.contextMenuStrip1.Name = "contextMenuStrip1";
             this.contextMenuStrip1.Size = new System.Drawing.Size(61, 4);
             // 
+            // pictureBoxmute
+            // 
+            this.pictureBoxmute.Location = new System.Drawing.Point(404, 664);
+            this.pictureBoxmute.Name = "pictureBoxmute";
+            this.pictureBoxmute.Size = new System.Drawing.Size(53, 50);
+            this.pictureBoxmute.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBoxmute.TabIndex = 9;
+            this.pictureBoxmute.TabStop = false;
+            this.pictureBoxmute.Click += new System.EventHandler(this.pictureBox1_Click_1);
+            // 
             // MainForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
@@ -517,6 +532,7 @@ namespace WEBPOS_RFIDSender
             this.panel5.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxNowCheckin)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLastCheckIn)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxmute)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -557,6 +573,7 @@ namespace WEBPOS_RFIDSender
         public System.Windows.Forms.TextBox textBoxTimeNowCheckIn;
         public System.Windows.Forms.TextBox textBoxTimeLastCheckIn;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.PictureBox pictureBoxmute;
     }
 }
 

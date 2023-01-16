@@ -19,6 +19,7 @@ namespace WEBPOS_RFIDSender
             InitializeComponent();
         }
 
+        public bool mute = false;
         private bool appActiving = false;
         private int workingTask_ID;
         public Boolean Ischeckin = true;
@@ -38,6 +39,8 @@ namespace WEBPOS_RFIDSender
             {
                 this.label4.Text = "CHECK-OUT";
             }
+
+            pictureBoxmute.Load(string.Format("Images/{0}.png", "volume"));
             Process[] processes = Process.GetProcessesByName("WEBPOS_RFIDSender");
             if (processes.Length > 1)
             {
@@ -235,13 +238,13 @@ namespace WEBPOS_RFIDSender
             if (hour < 20)
             {
                 Ischeckin = true;
-/*                this.checkin_pictureBox.Load(string.Format("Images/{0}.png", "Checkin"));*/
+                this.pictureBoxCheckin.Load(string.Format("Images/{0}.png", "Checkin"));
                 label4.Text = "CHECK-IN";
             }
             else
             {
                 Ischeckin = false;
-                /*this.checkin_pictureBox.Load(string.Format("Images/{0}.png", "Checkout"));*/
+                this.pictureBoxCheckin.Load(string.Format("Images/{0}.png", "Checkout"));
                 label4.Text = "CHECK-OUT";
             }
         }
@@ -473,6 +476,7 @@ namespace WEBPOS_RFIDSender
             {
                 Ischeckin = false;
                 this.label4.Text = "CHECK-OUT";
+                pictureBoxCheckin.Load(string.Format("Images/{0}.png", "Checkout"));
                 this.label4.ForeColor = Color.DarkOrange;
                 GlobalVariables.opos.OPOS_StartReading(GlobalVariables.OPOSRFID1, GlobalVariables.rT);
 
@@ -482,7 +486,7 @@ namespace WEBPOS_RFIDSender
                 Ischeckin = true;
                 this.label4.Text = "CHECK-IN";
                 this.label4.ForeColor = Color.DarkGreen;
-
+                pictureBoxCheckin.Load(string.Format("Images/{0}.png", "Checkin"));
                 GlobalVariables.opos.OPOS_StartReading(GlobalVariables.OPOSRFID1, GlobalVariables.rT);
 
             }
@@ -516,6 +520,24 @@ namespace WEBPOS_RFIDSender
         private void mainTitle_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void pictureBox1_Click_1(object sender, EventArgs e)
+        {
+            if (mute)
+            {
+                mute = false;
+                pictureBoxmute.Load(string.Format("Images/{0}.png", "volume"));
+            }else
+            {
+                mute = true;
+                pictureBoxmute.Load(string.Format("Images/{0}.png", "mute"));
+            }    
         }
 
         //private void infoLog_TextChanged(object sender, EventArgs e)

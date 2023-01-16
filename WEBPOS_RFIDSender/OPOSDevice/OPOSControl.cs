@@ -138,7 +138,7 @@ namespace WEBPOS_RFIDSender.OposControl
                         Program.mainForm.pictureBoxNowCheckout.Image = null;
                         Program.mainForm.textBoxNowCheckOut.Clear();
                         //Task.Run(() => speak_checkin(infoEmp));
-                        Task.Run(() => speakGoogle(infoEmp));
+                        Task.Run(() => speakGoogle(infoEmp,"Xin chào "));
 
                     }
                     else if (message.Contains("Cannot create new attendance"))
@@ -162,7 +162,6 @@ namespace WEBPOS_RFIDSender.OposControl
                         Program.mainForm.notice.ForeColor = Color.Crimson;
                         Program.mainForm.notice.Text = " Cannot find your information";
                         checkdialog.RFID_exist = new_code;
-
                         checkdialog.ShowDialog();
 
 
@@ -217,7 +216,7 @@ namespace WEBPOS_RFIDSender.OposControl
                         Program.mainForm.notice.Text = string.Format("Goodbye {0}! Thanks for your hardwork!", infoEmp.name.Split(' ').ToList().Last());
                         Program.mainForm.textBoxTimeNowCheckIn.Clear();
                         Program.mainForm.pictureBoxNowCheckin.Image = null;
-                        Task.Run(() => speak_checkout(infoEmp));
+                        Task.Run(() => speakGoogle(infoEmp,"Tạm biệt "));
                     }
                     else if (message.Contains("Employee already checked-out"))
                     {
@@ -232,6 +231,8 @@ namespace WEBPOS_RFIDSender.OposControl
                     {
                         Program.mainForm.notice.ForeColor = Color.Crimson;
                         Program.mainForm.notice.Text = " Cannot find your information";
+                        checkdialog.RFID_exist = new_code;
+                        checkdialog.ShowDialog();
                     }
                     else
                     {
@@ -273,12 +274,17 @@ namespace WEBPOS_RFIDSender.OposControl
             synthesizer.SetOutputToDefaultAudioDevice();
             synthesizer.Speak("Goodbye" + infoEmp.name);
         }
-        private void speakGoogle(API_odoo.MyResponse infoEmp)
+        private void speakGoogle(API_odoo.MyResponse infoEmp,String textread)
         {
-            String relatedLabel = "Xin chào " + infoEmp.name;
-            var playThread = new Thread(() => PlayMp3FromUrl("http://translate.google.com/translate_tts?q=" + HttpUtility.UrlEncode(relatedLabel)));
-            playThread.IsBackground = true;
-            playThread.Start();
+            if (!Program.mainForm.mute)
+            {
+                Console.WriteLine(infoEmp); 
+                String relatedLabel = textread + infoEmp.name;
+
+                var playThread = new Thread(() => PlayMp3FromUrl("https://translate.google.com/translate_tts?ie=UTF-8&tl=vi&client=tw-ob&q=" + HttpUtility.UrlEncode(relatedLabel)));
+                playThread.IsBackground = true;
+                playThread.Start();
+            }
         }
         bool waiting = false;
         AutoResetEvent stop = new AutoResetEvent(false);

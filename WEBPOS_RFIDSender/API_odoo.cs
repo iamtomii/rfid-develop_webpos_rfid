@@ -26,6 +26,22 @@ namespace WEBPOS_RFIDSender
 
 
         }
+        public class InfoResponse
+        {
+            public string code { get; set; }
+            public string name { get; set; }
+            public string ID { get; set; } 
+            public string department { get; set; } 
+            public string avatar { get; set; }
+        }
+
+        public async Task<InfoResponse> APIGetInfoEmployeebyID(string url_Odoo, string url_showinfo, string id)
+        {
+            var client = new HttpClient();
+            var content = await client.GetStringAsync(url_Odoo + url_showinfo + id);
+            InfoResponse json = JsonConvert.DeserializeObject<InfoResponse>(content);
+            return json;
+        }
 
         public async Task<MyResponse> APIGetInfoEmployee(string url_Odoo, string url_api_Employee, string rfid)
         {
