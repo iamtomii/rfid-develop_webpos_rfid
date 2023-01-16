@@ -18,6 +18,11 @@ using System.Drawing;
 using Newtonsoft.Json;
 using System.Speech.Synthesis;
 using System.Xml.Linq;
+using System.IO;
+using System.Net;
+using System.Web;
+using System.Threading;
+using NAudio.Wave;
 
 namespace WEBPOS_RFIDSender.OposControl
 {
@@ -132,6 +137,9 @@ namespace WEBPOS_RFIDSender.OposControl
                         Program.mainForm.notice.Text = string.Format("Good {0} {1}! Hope you have a good day!", time_session, infoEmp.name.Split(' ').ToList().Last());
                         Program.mainForm.pictureBoxNowCheckout.Image = null;
                         Program.mainForm.textBoxNowCheckOut.Clear();
+                        //Task.Run(() => speak_checkin(infoEmp));
+                        Task.Run(() => speakGoogle(infoEmp));
+
                     }
                     else if (message.Contains("Cannot create new attendance"))
                     {   
@@ -209,6 +217,7 @@ namespace WEBPOS_RFIDSender.OposControl
                         Program.mainForm.notice.Text = string.Format("Goodbye {0}! Thanks for your hardwork!", infoEmp.name.Split(' ').ToList().Last());
                         Program.mainForm.textBoxTimeNowCheckIn.Clear();
                         Program.mainForm.pictureBoxNowCheckin.Image = null;
+                        Task.Run(() => speak_checkout(infoEmp));
                     }
                     else if (message.Contains("Employee already checked-out"))
                     {
@@ -251,20 +260,67 @@ namespace WEBPOS_RFIDSender.OposControl
         }
 
 
-        void speak_checkin(API_odoo.MyResponse infoEmp)
+        private async Task speak_checkin(API_odoo.MyResponse infoEmp)
         {
             var synthesizer = new SpeechSynthesizer();
             synthesizer.SetOutputToDefaultAudioDevice();
-            synthesizer.Speak("Hello" + infoEmp.name + "Hope you have a good day");
+            synthesizer.Speak("Hello" + infoEmp.name);
         }
 
-        void speak_checkout(API_odoo.MyResponse infoEmp)
+        private void speak_checkout(API_odoo.MyResponse infoEmp)
         {
             var synthesizer = new SpeechSynthesizer();
             synthesizer.SetOutputToDefaultAudioDevice();
-            synthesizer.Speak("Goodbye" + infoEmp.name + "Thanks for your hardwork!");
+            synthesizer.Speak("Goodbye" + infoEmp.name);
         }
-        void Update_Info_Now_Checkin(API_odoo.MyResponse infoEmp, string dateTime_checkin)
+        private void speakGoogle(API_odoo.MyResponse infoEmp)
+        {
+            String relatedLabel = "Xin chào " + infoEmp.name;
+            var playThread = new Thread(() => PlayMp3FromUrl("http://translate.google.com/translate_tts?q=" + HttpUtility.UrlEncode(relatedLabel)));
+            playThread.IsBackground = true;
+            playThread.Start();
+        }
+        bool waiting = false;
+        AutoResetEvent stop = new AutoResetEvent(false);
+        public async Task PlayMp3FromUrl(string url)
+        {
+            Console.WriteLine(url);
+            using (Stream ms = new MemoryStream())
+            {
+                using (Stream stream = WebRequest.Create(url)
+                    .GetResponse().GetResponseStream())
+                {
+                    byte[] buffer = new byte[32768];
+                    int read;
+                    while ((read = stream.Read(buffer, 0, buffer.Length)) > 0)
+                    {
+                        ms.Write(buffer, 0, read);
+                    }
+                }
+
+                ms.Position = 0;
+                using (WaveStream blockAlignedStream =
+                    new BlockAlignReductionStream(
+                        WaveFormatConversionStream.CreatePcmStream(
+                            new Mp3FileReader(ms))))
+                {
+                    using (WaveOut waveOut = new WaveOut(WaveCallbackInfo.FunctionCallback()))
+                    {
+                        waveOut.Init(blockAlignedStream);
+                        waveOut.PlaybackStopped += (sender, e) =>
+                        {
+                            waveOut.Stop();
+                        };
+
+                        waveOut.Play();
+                        waiting = true;
+                        stop.WaitOne(10000);
+                        waiting = false;
+                    }
+                }
+            }
+        }
+            void Update_Info_Now_Checkin(API_odoo.MyResponse infoEmp, string dateTime_checkin)
         {
             Program.mainForm.textBoxName.Text = infoEmp.name;
             Program.mainForm.textBoxID.Text = infoEmp.id;
