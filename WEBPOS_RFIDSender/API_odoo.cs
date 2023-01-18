@@ -23,16 +23,20 @@ namespace WEBPOS_RFIDSender
             public string last_checkout { get; set; }
             public string last_checkin_image { get; set; }
             public string last_checkout_image { get; set; }
+            public string gender { get; set; }
 
 
         }
         public class InfoResponse
         {
+
             public string code { get; set; }
             public string name { get; set; }
             public string ID { get; set; } 
             public string department { get; set; } 
             public string avatar { get; set; }
+            public string phone { get; set; }
+
         }
 
         public async Task<InfoResponse> APIGetInfoEmployeebyID(string url_Odoo, string url_showinfo, string id)

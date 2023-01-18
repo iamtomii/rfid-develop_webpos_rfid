@@ -37,6 +37,7 @@ namespace WEBPOS_RFIDSender
             this.mainTitle = new System.Windows.Forms.Label();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.panelInfo = new System.Windows.Forms.Panel();
+            this.pictureBoxmute = new System.Windows.Forms.PictureBox();
             this.hightLight_Btn = new System.Windows.Forms.Panel();
             this.pictureBoxCheckin = new System.Windows.Forms.PictureBox();
             this.textBoxDepartment = new System.Windows.Forms.TextBox();
@@ -67,10 +68,10 @@ namespace WEBPOS_RFIDSender
             this.pictureBoxNowCheckin = new System.Windows.Forms.PictureBox();
             this.pictureBoxLastCheckIn = new System.Windows.Forms.PictureBox();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.pictureBoxmute = new System.Windows.Forms.PictureBox();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.panelInfo.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxmute)).BeginInit();
             this.hightLight_Btn.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxCheckin)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxInfo)).BeginInit();
@@ -81,7 +82,6 @@ namespace WEBPOS_RFIDSender
             this.panel5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxNowCheckin)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLastCheckIn)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxmute)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
@@ -149,6 +149,16 @@ namespace WEBPOS_RFIDSender
             this.panelInfo.Name = "panelInfo";
             this.panelInfo.Size = new System.Drawing.Size(473, 735);
             this.panelInfo.TabIndex = 7;
+            // 
+            // pictureBoxmute
+            // 
+            this.pictureBoxmute.Location = new System.Drawing.Point(185, 696);
+            this.pictureBoxmute.Name = "pictureBoxmute";
+            this.pictureBoxmute.Size = new System.Drawing.Size(39, 36);
+            this.pictureBoxmute.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBoxmute.TabIndex = 9;
+            this.pictureBoxmute.TabStop = false;
+            this.pictureBoxmute.Click += new System.EventHandler(this.pictureBox1_Click_1);
             // 
             // hightLight_Btn
             // 
@@ -490,16 +500,6 @@ namespace WEBPOS_RFIDSender
             this.contextMenuStrip1.Name = "contextMenuStrip1";
             this.contextMenuStrip1.Size = new System.Drawing.Size(61, 4);
             // 
-            // pictureBoxmute
-            // 
-            this.pictureBoxmute.Location = new System.Drawing.Point(404, 664);
-            this.pictureBoxmute.Name = "pictureBoxmute";
-            this.pictureBoxmute.Size = new System.Drawing.Size(53, 50);
-            this.pictureBoxmute.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBoxmute.TabIndex = 9;
-            this.pictureBoxmute.TabStop = false;
-            this.pictureBoxmute.Click += new System.EventHandler(this.pictureBox1_Click_1);
-            // 
             // MainForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
@@ -515,11 +515,13 @@ namespace WEBPOS_RFIDSender
             this.Text = "RFID Reader";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.panelInfo.ResumeLayout(false);
             this.panelInfo.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxmute)).EndInit();
             this.hightLight_Btn.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxCheckin)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxInfo)).EndInit();
@@ -532,7 +534,6 @@ namespace WEBPOS_RFIDSender
             this.panel5.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxNowCheckin)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLastCheckIn)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxmute)).EndInit();
             this.ResumeLayout(false);
 
         }

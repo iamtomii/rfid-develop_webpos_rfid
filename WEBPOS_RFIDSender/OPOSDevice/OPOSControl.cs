@@ -23,6 +23,7 @@ using System.Net;
 using System.Web;
 using System.Threading;
 using NAudio.Wave;
+using System.Windows.Media.Animation;
 
 namespace WEBPOS_RFIDSender.OposControl
 {
@@ -105,6 +106,7 @@ namespace WEBPOS_RFIDSender.OposControl
             }
             GlobalVariables.OPOSRFID1.DataEventEnabled = true;
         }
+
         private async Task showInfoAsync(String new_code)
         {
             API_odoo api = new API_odoo();
@@ -126,7 +128,7 @@ namespace WEBPOS_RFIDSender.OposControl
                     if (message == "success")
                     {
                        // interval_rfid.Add(new_code);
-                        infoEmp = await api.APIGetInfoEmployee(GlobalVariables.url_Odoo, GlobalVariables.url_api_Employee, new_code);
+                        infoEmp = await api.APIGetInfoEmployee(GlobalVariables.url_Odoo, GlobalVariables.url_api_Employee, new_code);                       
                         GlobalVariables.list_rfid_checkout.Remove(new_code);
                         GlobalVariables.list_rfid_checkin.Add(new_code);
                         Update_Info_Now_Checkin(infoEmp, dateTime_checkin);
@@ -138,7 +140,8 @@ namespace WEBPOS_RFIDSender.OposControl
                         Program.mainForm.pictureBoxNowCheckout.Image = null;
                         Program.mainForm.textBoxNowCheckOut.Clear();
                         //Task.Run(() => speak_checkin(infoEmp));
-                        Task.Run(() => speakGoogle(infoEmp,"Xin chào "));
+
+                        Task.Run(() => speakGoogle(infoEmp, GlobalVariables.text_checkin));
 
                     }
                     else if (message.Contains("Cannot create new attendance"))
@@ -216,7 +219,7 @@ namespace WEBPOS_RFIDSender.OposControl
                         Program.mainForm.notice.Text = string.Format("Goodbye {0}! Thanks for your hardwork!", infoEmp.name.Split(' ').ToList().Last());
                         Program.mainForm.textBoxTimeNowCheckIn.Clear();
                         Program.mainForm.pictureBoxNowCheckin.Image = null;
-                        Task.Run(() => speakGoogle(infoEmp,"Tạm biệt "));
+                        Task.Run(() => speakGoogle(infoEmp, GlobalVariables.text_checkout));
                     }
                     else if (message.Contains("Employee already checked-out"))
                     {
@@ -259,7 +262,25 @@ namespace WEBPOS_RFIDSender.OposControl
             }
 
         }
+        public void setAtenaPower(AxOPOSRFID OPOSRFID1, string strCSV)
+        {
+            //string strCSV = "";
+            int lData;
 
+            int lRet;
+            OPOSRFID1.BinaryConversion = OposStatus.OposBcNone;
+
+            lData = 2;
+            lRet = OPOSRFID1.DirectIO(120, ref lData, ref strCSV);
+
+
+            if (lRet != OposStatus.OposSuccess)
+            {
+                Console.WriteLine("Setting atena power is failed!");
+            }
+
+            OPOSRFID1.BinaryConversion = OposStatus.OposBcNibble;
+        }
 
         private async Task speak_checkin(API_odoo.MyResponse infoEmp)
         {
@@ -274,12 +295,28 @@ namespace WEBPOS_RFIDSender.OposControl
             synthesizer.SetOutputToDefaultAudioDevice();
             synthesizer.Speak("Goodbye" + infoEmp.name);
         }
+        private String gender_to_text(String gender)
+        {
+            if (gender.Equals("male"))
+            {
+                return " anh ";
+            }
+            else if(gender.Equals("female"))
+            {
+                return " chị ";
+            }
+            else
+            {
+                return " anh ";
+            }
+        }
         private void speakGoogle(API_odoo.MyResponse infoEmp,String textread)
         {
             if (!Program.mainForm.mute)
             {
-                Console.WriteLine(infoEmp); 
-                String relatedLabel = textread + infoEmp.name;
+                String first_name = infoEmp.name.Split(' ').Last();
+                String relatedLabel = textread + gender_to_text(infoEmp.gender) + first_name;
+
 
                 var playThread = new Thread(() => PlayMp3FromUrl("https://translate.google.com/translate_tts?ie=UTF-8&tl=vi&client=tw-ob&q=" + HttpUtility.UrlEncode(relatedLabel)));
                 playThread.IsBackground = true;

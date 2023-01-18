@@ -36,6 +36,7 @@ C:\RFID\rfid\rfid-develop_webpos_rfid\rfid-develop_webpos_rfid\WEBPOS_RFIDSender
 C:\RFID\rfid\rfid-develop_webpos_rfid\rfid-develop_webpos_rfid\WEBPOS_RFIDSender\bin\Release\dll\x64\OpenCvSharpExtern.dll
 C:\RFID\rfid\rfid-develop_webpos_rfid\rfid-develop_webpos_rfid\WEBPOS_RFIDSender\bin\Release\dll\x64\opencv_ffmpeg400_64.dll
 C:\RFID\rfid\rfid-develop_webpos_rfid\rfid-develop_webpos_rfid\WEBPOS_RFIDSender\bin\Release\SENDER_CONFIG.ini
+C:\RFID\rfid\rfid-develop_webpos_rfid\rfid-develop_webpos_rfid\WEBPOS_RFIDSender\bin\Release\TECAtenaSetting.ini
 C:\RFID\rfid\rfid-develop_webpos_rfid\rfid-develop_webpos_rfid\WEBPOS_RFIDSender\bin\Release\WEBPOS_RFIDSender.exe.config
 C:\RFID\rfid\rfid-develop_webpos_rfid\rfid-develop_webpos_rfid\WEBPOS_RFIDSender\bin\Release\WEBPOS_RFIDSender.exe
 C:\RFID\rfid\rfid-develop_webpos_rfid\rfid-develop_webpos_rfid\WEBPOS_RFIDSender\bin\Release\WEBPOS_RFIDSender.pdb
@@ -73,7 +74,6 @@ C:\RFID\rfid\rfid-develop_webpos_rfid\rfid-develop_webpos_rfid\WEBPOS_RFIDSender
 C:\RFID\rfid\rfid-develop_webpos_rfid\rfid-develop_webpos_rfid\WEBPOS_RFIDSender\obj\Release\WEBPOS_RFIDSender.dialog.resources
 C:\RFID\rfid\rfid-develop_webpos_rfid\rfid-develop_webpos_rfid\WEBPOS_RFIDSender\obj\Release\WEBPOS_RFIDSender.MainForm.resources
 C:\RFID\rfid\rfid-develop_webpos_rfid\rfid-develop_webpos_rfid\WEBPOS_RFIDSender\obj\Release\WEBPOS_RFIDSender.Properties.Resources.resources
-C:\RFID\rfid\rfid-develop_webpos_rfid\rfid-develop_webpos_rfid\WEBPOS_RFIDSender\obj\Release\WEBPOS_RFIDSender.showinfo.resources
 C:\RFID\rfid\rfid-develop_webpos_rfid\rfid-develop_webpos_rfid\WEBPOS_RFIDSender\obj\Release\WEBPOS_RFIDSender.csproj.GenerateResource.cache
 C:\RFID\rfid\rfid-develop_webpos_rfid\rfid-develop_webpos_rfid\WEBPOS_RFIDSender\obj\Release\WEBPOS_RFIDSender.csproj.CoreCompileInputs.cache
 C:\RFID\rfid\rfid-develop_webpos_rfid\rfid-develop_webpos_rfid\WEBPOS_RFIDSender\obj\Release\WEBPOS_RFIDSender.csproj.Fody.CopyLocal.cache

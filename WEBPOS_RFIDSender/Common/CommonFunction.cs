@@ -47,7 +47,24 @@ namespace WEBPOS_RFIDSender.Common
             }
             return true;
         }
+        private static Dictionary<string, string> ValidateAntenaPower(Dictionary<string, string> sourceList)
+        {
+            Dictionary<string, string> lastListAntenna = new Dictionary<string, string>();
+            foreach (var element in sourceList)
+            {
+                string key = element.Key;
+                string value = element.Value;
 
+                if (!int.TryParse(value, out int intValue))
+                {
+                    value = "-";
+                    Console.WriteLine(string.Format("Invalid value of antenna power {0} (value = {1}), replace with '-'", key, value));
+                }
+
+                lastListAntenna.Add(key, value);
+            }
+            return lastListAntenna;
+        }
         public static IEnumerable<IntPtr> EnumerateProcessWindowHandles(Process process)
         {
             var handles = new List<IntPtr>();
@@ -69,6 +86,13 @@ namespace WEBPOS_RFIDSender.Common
                     Environment.Exit(0);
                 }
             }
+        
+            Dictionary<string, string> atenaSetting = getDictionaryConfig("TECAtenaSetting.ini");
+
+            atenaSetting.OrderBy(el => el.Key);
+            atenaSetting = ValidateAntenaPower(atenaSetting);
+            List<string> valueList = new List<string>(atenaSetting.Values);
+            GlobalVariables.atenaPowerCSV = String.Join(",", valueList.ToArray());
 
 
             GlobalVariables.api_key = dataInFile["api_key"];
@@ -93,6 +117,9 @@ namespace WEBPOS_RFIDSender.Common
             GlobalVariables.url_Odoo = dataInFile["url_Odoo"];
             GlobalVariables.url_checkin = dataInFile["url_checkin"];
             GlobalVariables.url_createnew = dataInFile["url_createnew"];
+            GlobalVariables.hours_change = (int)Int64.Parse(dataInFile["hours_change"]);
+            GlobalVariables.text_checkin = dataInFile["text_checkin"];
+            GlobalVariables.text_checkout = dataInFile["text_checkout"];
             GlobalVariables.url_showinfo = dataInFile["url_showinfo"];
             GlobalVariables.url_checkout = dataInFile["url_checkout"];
             GlobalVariables.url_api_Employee = dataInFile["url_api_Employee"];

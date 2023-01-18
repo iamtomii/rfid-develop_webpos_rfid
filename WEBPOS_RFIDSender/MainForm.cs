@@ -9,6 +9,7 @@ using WEBPOS_RFIDSender.StateModel;
 using System.Drawing;
 using System.Linq;
 using System.Collections.Generic;
+using OPOSRFIDLib;
 
 namespace WEBPOS_RFIDSender
 {
@@ -61,9 +62,7 @@ namespace WEBPOS_RFIDSender
 
             GlobalVariables.OPOSRFID1.CreateControl();
             GlobalVariables.opos.OPOS_EnableDevice(GlobalVariables.OPOSRFID1, GlobalVariables.device_name);
-            Console.WriteLine("check"+GlobalVariables.OPOSRFID1.PowerState);
-            Console.WriteLine("check"+GlobalVariables.OPOSRFID1.PowerNotify);
-            Console.WriteLine("check"+GlobalVariables.OPOSRFID1.CapPowerReporting);
+            GlobalVariables.opos.setAtenaPower(GlobalVariables.OPOSRFID1, GlobalVariables.atenaPowerCSV);
 
             //statusContent.Text = "ACTIVING";
             WindowState = FormWindowState.Maximized;
@@ -89,27 +88,6 @@ namespace WEBPOS_RFIDSender
             GlobalVariables.OPOSRFID1.DataEventEnabled = true;
         }
 
-        private void MainWorker()
-        {
-            //CommonFunction.readConfigFile();
-            GlobalVariables.staticTitle = OCRText.getTileStatic_Image("TitleState");
-
-            bool WEBPOSis_detected = CommonFunction.GetWebPOSScreen();
-            while (!WEBPOSis_detected)
-            {
-                Thread.Sleep(1000);
-                Console.WriteLine(">>> No WEBPOS detected!");
-                //Program.mainForm.infoLog.Text += ">>> No WEBPOS detected!\r\n";
-                WEBPOSis_detected = CommonFunction.GetWebPOSScreen();
-            }
-
-            Console.WriteLine(">>> WEBPOS is detected!");
-            //Program.mainForm.infoLog.Text += ">>> WEBPOS is detected!\r\n";
-
-            GlobalVariables.OPOSRFID1.CreateControl();
-            GlobalVariables.opos.OPOS_EnableDevice(GlobalVariables.OPOSRFID1, GlobalVariables.device_name);
-            
-        }
 
         public static void WriteLog(string data)
         {
@@ -205,20 +183,6 @@ namespace WEBPOS_RFIDSender
                 Thread.Sleep(1000);
             }
         }
-
-        private Task WaitPOS()
-        {
-            while (true)
-            {
-                if (!isProcessClosed("AIR_START"))
-                {
-                    //statusContent.Text = "ACTIVING";
-                    appActiving = true;
-                    MainWorker();
-                    return null;
-                }
-            }
-        }
         private async Task CheckHour()
         {
             while (true)
@@ -235,7 +199,7 @@ namespace WEBPOS_RFIDSender
         void Check_Hour()
         {
             int hour = Int16.Parse(DateTime.Now.ToString("HH"));
-            if (hour < 20)
+            if (hour < GlobalVariables.hours_change)
             {
                 Ischeckin = true;
                 this.pictureBoxCheckin.Load(string.Format("Images/{0}.png", "Checkin"));
@@ -522,6 +486,7 @@ namespace WEBPOS_RFIDSender
 
         }
 
+
         private void panel1_Paint(object sender, PaintEventArgs e)
         {
 
@@ -538,6 +503,17 @@ namespace WEBPOS_RFIDSender
                 mute = true;
                 pictureBoxmute.Load(string.Format("Images/{0}.png", "mute"));
             }    
+        }
+
+        private void MainForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.C)
+            {
+                pictureBoxCheckin_Click(sender, new EventArgs());
+            }else if (e.KeyCode == Keys.M)
+            {
+                pictureBox1_Click_1(sender, new EventArgs());
+            }
         }
 
         //private void infoLog_TextChanged(object sender, EventArgs e)

@@ -54,7 +54,7 @@
     </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>ico.ico</ApplicationIcon>
+    <ApplicationIcon>logo.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Costura, Version=5.7.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -341,12 +341,6 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RFID_MQ.cs" />
-    <Compile Include="showinfo.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="showinfo.Designer.cs">
-      <DependentUpon>showinfo.cs</DependentUpon>
-    </Compile>
     <Compile Include="StateModel\OCRText.cs" />
     <Compile Include="WinAPI\WindowAPI.cs" />
     <EmbeddedResource Include="AppStarting.resx">
@@ -370,9 +364,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="showinfo.resx">
-      <DependentUpon>showinfo.cs</DependentUpon>
-    </EmbeddedResource>
     <None Include="SENDER_CONFIG.ini">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -386,6 +377,9 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="TECAtenaSetting.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -410,7 +404,8 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ico.ico" />
+    <Content Include="AI POWER.ico" />
+    <Content Include="logo.ico" />
     <Content Include="TitleState\payment.jpg" />
     <Content Include="TitleState\pre_scan.jpg" />
     <Content Include="TitleState\scanning.jpg" />

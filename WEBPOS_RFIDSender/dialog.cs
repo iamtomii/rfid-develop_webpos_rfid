@@ -26,6 +26,7 @@ namespace WEBPOS_RFIDSender
 
         private void dialog_Load(object sender, EventArgs e)
         {
+            
             tatus.Text= tatustext;
         }
 

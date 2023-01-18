@@ -11,15 +11,17 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using WEBPOS_RFIDSender.Common;
 using System.Speech.Synthesis;
+using System.IO;
 
 namespace WEBPOS_RFIDSender
 {
     public partial class CheckCreateNewForm : Form
     {
-        showinfo showifo = new showinfo();
+
         dialog dialogresult = new dialog();
         API_odoo.InfoResponse infoEmpbyid = new API_odoo.InfoResponse();
         public string RFID_exist { get; set; }
+        public string PINCODE { get; set; }
         public CheckCreateNewForm(string RFID_exist)
         {
             this.RFID_exist= RFID_exist;
@@ -37,49 +39,137 @@ namespace WEBPOS_RFIDSender
 
         private void CheckCreateNewForm_Load(object sender, EventArgs e)
         {
-            this.textBoxID.Visible = true;
-            this.textBoxID.Text = null;
-            this.noticecreate.Text = "RFID not exist! Do you want create new ?";
+            this.textBoxPINID.Visible = true;
+            this.textBoxPINID.Text = null;
             this.inputtext.Visible= true;
             this.buttonYes.Visible= true;
-            this.buttonNo.Text = "NO";
+            this.labeltatus.Text = "RFID : "+ RFID_exist;
+            labelname.Text = null;
+            labelphone.Text = null;
+            labelid.Text = null;
+            labeldeparment.Text = null;
+            pictureBoxavatar.Image = null;
+        }
+        public System.Drawing.Image stringToImage(string inputString)
+        {
+            Char[] listTrim = { 'b', '\'' };
+            inputString = inputString.Trim(listTrim);
+            System.Drawing.Image image = new Bitmap(100, 1000);
+            if (string.IsNullOrEmpty(inputString))
+            {
+                return image;
+            }
+            byte[] bytes = Convert.FromBase64String(inputString);
+            using (MemoryStream ms = new MemoryStream(bytes, 0, bytes.Length))
+            {
+                ms.Write(bytes, 0, bytes.Length);
+                image = System.Drawing.Image.FromStream(ms, true, true);
+                return image;
+            }
         }
 
         private async void textBoxID_TextChanged(object sender, EventArgs e)
         {
-            textBoxID.Focus();
+            textBoxPINID.Focus();
 
         }
 
         private async void buttonYes_Click(object sender, EventArgs e)
         {
+
             Close();
-            String text=textBoxID.Text;
-            Console.WriteLine(text);
             API_odoo api = new API_odoo();
-            infoEmpbyid = await api.APIGetInfoEmployeebyID(GlobalVariables.url_Odoo,GlobalVariables.url_showinfo,text);
-            if (infoEmpbyid.code == "ok")
+            String message = await api.APICreateNewRFIDEMployee(PINCODE, RFID_exist, GlobalVariables.url_Odoo, GlobalVariables.url_createnew);
+
+            JObject obj = JObject.Parse(message);
+            if (!(obj.ContainsKey("debug")))
             {
-                showifo.Name = infoEmpbyid.name;
-                showifo.ID = infoEmpbyid.ID;
-                showifo.deparment = infoEmpbyid.department;
-                showifo.avatar= infoEmpbyid.avatar;
-                showifo.RFID = RFID_exist;
-                showifo.PIN = text;
-                showifo.ShowDialog();
-                
+                Console.WriteLine(obj["name"].ToString());
+                String name = obj["name"].ToString();
+                dialogresult.tatustext = "RFID is created with employee " + name;
+                dialogresult.ShowDialog();
+
             }
             else
             {
-                String tatustext = infoEmpbyid.code;
-                dialogresult.tatustext= tatustext;
+                Console.WriteLine(obj.ToString());
+                dialogresult.tatustext = "Can not create! \n" + obj["message"].ToString();
                 dialogresult.ShowDialog();
+
             }
         }
 
         private void buttonNo_Click(object sender, EventArgs e)
         {
             Close();
+        }
+
+        private void label1_Click_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void labelname_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void labelid_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void labeldeparment_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void idlabel_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void pictureBoxavatar_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private async void buttonset_Click(object sender, EventArgs e)
+        {
+           
+            this.PINCODE= textBoxPINID.Text;
+            API_odoo api = new API_odoo();
+            infoEmpbyid = await api.APIGetInfoEmployeebyID(GlobalVariables.url_Odoo, GlobalVariables.url_showinfo, PINCODE);
+            if (infoEmpbyid.code == "ok")
+            {
+                labeltatus.Text = "RFID : " + RFID_exist;
+                labelname.Text = infoEmpbyid.name;
+                labelphone.Text = infoEmpbyid.phone;
+                labelid.Text = infoEmpbyid.ID;
+                labeldeparment.Text = infoEmpbyid.department;
+                pictureBoxavatar.Image = stringToImage(infoEmpbyid.avatar);
+
+            }
+            else
+            {
+                labeltatus.Text = infoEmpbyid.code;
+                labeltatus.ForeColor = Color.DarkOrange;
+                labelname.Text = null;
+                labelphone.Text = null;
+                labelid.Text = null;
+                labeldeparment.Text = null;
+                pictureBoxavatar.Image = null;
+            }
         }
     }
 }
