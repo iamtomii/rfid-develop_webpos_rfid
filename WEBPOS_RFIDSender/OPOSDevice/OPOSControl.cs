@@ -148,7 +148,6 @@ namespace WEBPOS_RFIDSender.OposControl
                     // interval_rfid.Add(new_code);
                     infoEmp = await api.APIGetInfoEmployee(GlobalVariables.url_Odoo, GlobalVariables.url_api_Employee, new_code);
                     Update_Info_Now_Checkin(infoEmp, dateTime_checkin);
-                    updateImageCheckout(infoEmp);
                     Update_Info_Recently_CheckINCheckOUT(infoEmp);
                     Program.mainForm.pictureBoxNowCheckin.Image = GlobalVariables.cam_check.stringToImage(image_checkin);
                     //  ShowInfo_Object.pictureBox_now_Checkin.Image = GlobalData.Cam1.stringToImage(image_checkin);
@@ -191,14 +190,15 @@ namespace WEBPOS_RFIDSender.OposControl
                 if (message == "success")
                 {
                     infoEmp = await api.APIGetInfoEmployee(GlobalVariables.url_Odoo, GlobalVariables.url_api_Employee, new_code);
+                    Program.mainForm.textBoxTimeNowCheckIn.Clear();
+                    Program.mainForm.pictureBoxNowCheckin.Image = null;
                     Update_Info_Now_Checkout(infoEmp, dateTime_checkout);
                     updateImageCheckin(infoEmp);
                     Update_Info_Recently_CheckINCheckOUT(infoEmp);
                     Program.mainForm.pictureBoxNowCheckout.Image = GlobalVariables.cam_check.stringToImage(image_checkout);
                     Program.mainForm.notice.ForeColor = Color.DarkGreen;
                     Program.mainForm.notice.Text = string.Format("Goodbye {0}! Thanks for your hardwork!", infoEmp.name.Split(' ').ToList().Last());
-                    Program.mainForm.textBoxTimeNowCheckIn.Clear();
-                    Program.mainForm.pictureBoxNowCheckin.Image = null;
+
                     Task.Run(() => speakGoogle(infoEmp, GlobalVariables.text_checkout));
                 }
                 else if (message.Contains("Can not find employee"))
@@ -400,13 +400,15 @@ namespace WEBPOS_RFIDSender.OposControl
                         infoEmp = await api.APIGetInfoEmployee(GlobalVariables.url_Odoo, GlobalVariables.url_api_Employee, new_code);
                         GlobalVariables.list_rfid_checkin.Remove(new_code);
                         GlobalVariables.list_rfid_checkout.Add(new_code);
+                        Program.mainForm.textBoxTimeNowCheckIn.Clear();
+                        Program.mainForm.pictureBoxNowCheckin.Image = null;
                         Update_Info_Now_Checkout(infoEmp, dateTime_checkout);
+                        updateImageCheckin(infoEmp);
                         Update_Info_Recently_CheckINCheckOUT(infoEmp);
                         Program.mainForm.pictureBoxNowCheckout.Image = GlobalVariables.cam_check.stringToImage(image_checkout);
                         Program.mainForm.notice.ForeColor = Color.DarkGreen;
                         Program.mainForm.notice.Text = string.Format("Goodbye {0}! Thanks for your hardwork!", infoEmp.name.Split(' ').ToList().Last());
-                        Program.mainForm.textBoxTimeNowCheckIn.Clear();
-                        Program.mainForm.pictureBoxNowCheckin.Image = null;
+
                         Task.Run(() => speakGoogle(infoEmp, GlobalVariables.text_checkout));
                     }
                     else if (message.Contains("Employee already checked-out"))
