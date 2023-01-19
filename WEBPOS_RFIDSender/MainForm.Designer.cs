@@ -93,7 +93,7 @@ namespace WEBPOS_RFIDSender
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1784, 130);
+            this.panel1.Size = new System.Drawing.Size(1904, 130);
             this.panel1.TabIndex = 6;
             this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
             // 
@@ -104,7 +104,7 @@ namespace WEBPOS_RFIDSender
             this.notice.ForeColor = System.Drawing.SystemColors.ControlText;
             this.notice.Location = new System.Drawing.Point(786, 36);
             this.notice.Name = "notice";
-            this.notice.Size = new System.Drawing.Size(969, 60);
+            this.notice.Size = new System.Drawing.Size(1075, 60);
             this.notice.TabIndex = 61;
             this.notice.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.notice.Click += new System.EventHandler(this.notice_Click);
@@ -145,16 +145,17 @@ namespace WEBPOS_RFIDSender
             this.panelInfo.Controls.Add(this.label1);
             this.panelInfo.Controls.Add(this.pictureBoxInfo);
             this.panelInfo.Location = new System.Drawing.Point(12, 144);
-            this.panelInfo.MaximumSize = new System.Drawing.Size(600, 800);
+            this.panelInfo.MaximumSize = new System.Drawing.Size(1000, 1000);
             this.panelInfo.Name = "panelInfo";
-            this.panelInfo.Size = new System.Drawing.Size(473, 735);
+            this.panelInfo.Size = new System.Drawing.Size(475, 870);
             this.panelInfo.TabIndex = 7;
             // 
             // pictureBoxmute
             // 
-            this.pictureBoxmute.Location = new System.Drawing.Point(185, 696);
+            this.pictureBoxmute.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBoxmute.Location = new System.Drawing.Point(171, 825);
             this.pictureBoxmute.Name = "pictureBoxmute";
-            this.pictureBoxmute.Size = new System.Drawing.Size(39, 36);
+            this.pictureBoxmute.Size = new System.Drawing.Size(32, 32);
             this.pictureBoxmute.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxmute.TabIndex = 9;
             this.pictureBoxmute.TabStop = false;
@@ -164,18 +165,19 @@ namespace WEBPOS_RFIDSender
             // 
             this.hightLight_Btn.BackColor = System.Drawing.Color.DarkTurquoise;
             this.hightLight_Btn.Controls.Add(this.pictureBoxCheckin);
-            this.hightLight_Btn.Location = new System.Drawing.Point(120, 542);
+            this.hightLight_Btn.Location = new System.Drawing.Point(110, 592);
             this.hightLight_Btn.Name = "hightLight_Btn";
-            this.hightLight_Btn.Size = new System.Drawing.Size(165, 117);
+            this.hightLight_Btn.Size = new System.Drawing.Size(193, 177);
             this.hightLight_Btn.TabIndex = 8;
             // 
             // pictureBoxCheckin
             // 
             this.pictureBoxCheckin.AccessibleRole = System.Windows.Forms.AccessibleRole.TitleBar;
             this.pictureBoxCheckin.BackColor = System.Drawing.Color.Wheat;
-            this.pictureBoxCheckin.Location = new System.Drawing.Point(16, 16);
+            this.pictureBoxCheckin.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBoxCheckin.Location = new System.Drawing.Point(12, 15);
             this.pictureBoxCheckin.Name = "pictureBoxCheckin";
-            this.pictureBoxCheckin.Size = new System.Drawing.Size(134, 90);
+            this.pictureBoxCheckin.Size = new System.Drawing.Size(169, 150);
             this.pictureBoxCheckin.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxCheckin.TabIndex = 0;
             this.pictureBoxCheckin.TabStop = false;
@@ -189,7 +191,7 @@ namespace WEBPOS_RFIDSender
             this.textBoxDepartment.Location = new System.Drawing.Point(171, 417);
             this.textBoxDepartment.Name = "textBoxDepartment";
             this.textBoxDepartment.ReadOnly = true;
-            this.textBoxDepartment.Size = new System.Drawing.Size(198, 26);
+            this.textBoxDepartment.Size = new System.Drawing.Size(259, 26);
             this.textBoxDepartment.TabIndex = 7;
             this.textBoxDepartment.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
@@ -201,7 +203,7 @@ namespace WEBPOS_RFIDSender
             this.textBoxID.Location = new System.Drawing.Point(171, 372);
             this.textBoxID.Name = "textBoxID";
             this.textBoxID.ReadOnly = true;
-            this.textBoxID.Size = new System.Drawing.Size(198, 26);
+            this.textBoxID.Size = new System.Drawing.Size(259, 26);
             this.textBoxID.TabIndex = 6;
             this.textBoxID.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.textBoxID.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
@@ -214,7 +216,7 @@ namespace WEBPOS_RFIDSender
             this.textBoxName.Location = new System.Drawing.Point(171, 330);
             this.textBoxName.Name = "textBoxName";
             this.textBoxName.ReadOnly = true;
-            this.textBoxName.Size = new System.Drawing.Size(198, 26);
+            this.textBoxName.Size = new System.Drawing.Size(259, 26);
             this.textBoxName.TabIndex = 5;
             this.textBoxName.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.textBoxName.WordWrap = false;
@@ -225,7 +227,7 @@ namespace WEBPOS_RFIDSender
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Tahoma", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label4.ForeColor = System.Drawing.Color.DarkGreen;
-            this.label4.Location = new System.Drawing.Point(147, 503);
+            this.label4.Location = new System.Drawing.Point(150, 537);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(111, 24);
             this.label4.TabIndex = 4;
@@ -270,7 +272,7 @@ namespace WEBPOS_RFIDSender
             this.pictureBoxInfo.BackColor = System.Drawing.Color.MintCream;
             this.pictureBoxInfo.Location = new System.Drawing.Point(99, 20);
             this.pictureBoxInfo.Name = "pictureBoxInfo";
-            this.pictureBoxInfo.Size = new System.Drawing.Size(254, 264);
+            this.pictureBoxInfo.Size = new System.Drawing.Size(275, 271);
             this.pictureBoxInfo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxInfo.TabIndex = 0;
             this.pictureBoxInfo.TabStop = false;
@@ -281,9 +283,9 @@ namespace WEBPOS_RFIDSender
             this.panel2.BackColor = System.Drawing.Color.GhostWhite;
             this.panel2.Controls.Add(this.panel3);
             this.panel2.Controls.Add(this.panel5);
-            this.panel2.Location = new System.Drawing.Point(503, 144);
+            this.panel2.Location = new System.Drawing.Point(533, 144);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(1281, 735);
+            this.panel2.Size = new System.Drawing.Size(1350, 870);
             this.panel2.TabIndex = 8;
             this.panel2.Paint += new System.Windows.Forms.PaintEventHandler(this.panel2_Paint);
             // 
@@ -299,19 +301,19 @@ namespace WEBPOS_RFIDSender
             this.panel3.Controls.Add(this.pictureBoxNowCheckout);
             this.panel3.Controls.Add(this.pictureBoxLastCheckOut);
             this.panel3.Font = new System.Drawing.Font("Tahoma", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.panel3.Location = new System.Drawing.Point(665, 9);
+            this.panel3.Location = new System.Drawing.Point(703, 30);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(525, 677);
+            this.panel3.Size = new System.Drawing.Size(610, 800);
             this.panel3.TabIndex = 11;
             // 
             // textBoxNowCheckOut
             // 
             this.textBoxNowCheckOut.BackColor = System.Drawing.Color.PowderBlue;
             this.textBoxNowCheckOut.Enabled = false;
-            this.textBoxNowCheckOut.Location = new System.Drawing.Point(134, 613);
+            this.textBoxNowCheckOut.Location = new System.Drawing.Point(134, 756);
             this.textBoxNowCheckOut.Name = "textBoxNowCheckOut";
             this.textBoxNowCheckOut.ReadOnly = true;
-            this.textBoxNowCheckOut.Size = new System.Drawing.Size(310, 32);
+            this.textBoxNowCheckOut.Size = new System.Drawing.Size(350, 32);
             this.textBoxNowCheckOut.TabIndex = 7;
             this.textBoxNowCheckOut.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.textBoxNowCheckOut.TextChanged += new System.EventHandler(this.textBoxNowCheckOut_TextChanged);
@@ -320,10 +322,10 @@ namespace WEBPOS_RFIDSender
             // 
             this.textBoxTimeLastCheckOut.BackColor = System.Drawing.Color.PowderBlue;
             this.textBoxTimeLastCheckOut.Enabled = false;
-            this.textBoxTimeLastCheckOut.Location = new System.Drawing.Point(134, 287);
+            this.textBoxTimeLastCheckOut.Location = new System.Drawing.Point(134, 363);
             this.textBoxTimeLastCheckOut.Name = "textBoxTimeLastCheckOut";
             this.textBoxTimeLastCheckOut.ReadOnly = true;
-            this.textBoxTimeLastCheckOut.Size = new System.Drawing.Size(310, 32);
+            this.textBoxTimeLastCheckOut.Size = new System.Drawing.Size(350, 32);
             this.textBoxTimeLastCheckOut.TabIndex = 6;
             this.textBoxTimeLastCheckOut.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
@@ -331,7 +333,7 @@ namespace WEBPOS_RFIDSender
             // 
             this.label10.AutoSize = true;
             this.label10.Font = new System.Drawing.Font("Tahoma", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label10.Location = new System.Drawing.Point(36, 621);
+            this.label10.Location = new System.Drawing.Point(48, 764);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(59, 24);
             this.label10.TabIndex = 5;
@@ -342,7 +344,7 @@ namespace WEBPOS_RFIDSender
             // 
             this.label9.AutoSize = true;
             this.label9.Font = new System.Drawing.Font("Tahoma", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label9.Location = new System.Drawing.Point(48, 295);
+            this.label9.Location = new System.Drawing.Point(39, 371);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(59, 24);
             this.label9.TabIndex = 4;
@@ -353,29 +355,29 @@ namespace WEBPOS_RFIDSender
             // 
             this.label8.AutoSize = true;
             this.label8.Font = new System.Drawing.Font("Tahoma", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label8.Location = new System.Drawing.Point(227, 336);
+            this.label8.Location = new System.Drawing.Point(242, 412);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(113, 24);
+            this.label8.Size = new System.Drawing.Size(110, 24);
             this.label8.TabIndex = 3;
-            this.label8.Text = "Check Out";
+            this.label8.Text = "Check out";
             // 
             // label7
             // 
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Tahoma", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(180, 11);
+            this.label7.Location = new System.Drawing.Point(227, 20);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(160, 24);
+            this.label7.Size = new System.Drawing.Size(157, 24);
             this.label7.TabIndex = 2;
-            this.label7.Text = "Last Check Out";
+            this.label7.Text = "Last Check out";
             this.label7.Click += new System.EventHandler(this.label7_Click);
             // 
             // pictureBoxNowCheckout
             // 
             this.pictureBoxNowCheckout.BackColor = System.Drawing.Color.MintCream;
-            this.pictureBoxNowCheckout.Location = new System.Drawing.Point(134, 363);
+            this.pictureBoxNowCheckout.Location = new System.Drawing.Point(134, 449);
             this.pictureBoxNowCheckout.Name = "pictureBoxNowCheckout";
-            this.pictureBoxNowCheckout.Size = new System.Drawing.Size(310, 237);
+            this.pictureBoxNowCheckout.Size = new System.Drawing.Size(350, 290);
             this.pictureBoxNowCheckout.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxNowCheckout.TabIndex = 1;
             this.pictureBoxNowCheckout.TabStop = false;
@@ -383,9 +385,9 @@ namespace WEBPOS_RFIDSender
             // pictureBoxLastCheckOut
             // 
             this.pictureBoxLastCheckOut.BackColor = System.Drawing.Color.MintCream;
-            this.pictureBoxLastCheckOut.Location = new System.Drawing.Point(134, 38);
+            this.pictureBoxLastCheckOut.Location = new System.Drawing.Point(134, 56);
             this.pictureBoxLastCheckOut.Name = "pictureBoxLastCheckOut";
-            this.pictureBoxLastCheckOut.Size = new System.Drawing.Size(310, 237);
+            this.pictureBoxLastCheckOut.Size = new System.Drawing.Size(350, 290);
             this.pictureBoxLastCheckOut.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxLastCheckOut.TabIndex = 0;
             this.pictureBoxLastCheckOut.TabStop = false;
@@ -401,9 +403,9 @@ namespace WEBPOS_RFIDSender
             this.panel5.Controls.Add(this.label5);
             this.panel5.Controls.Add(this.pictureBoxNowCheckin);
             this.panel5.Controls.Add(this.pictureBoxLastCheckIn);
-            this.panel5.Location = new System.Drawing.Point(88, 9);
+            this.panel5.Location = new System.Drawing.Point(37, 30);
             this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(523, 677);
+            this.panel5.Size = new System.Drawing.Size(610, 800);
             this.panel5.TabIndex = 10;
             // 
             // textBoxTimeNowCheckIn
@@ -411,10 +413,10 @@ namespace WEBPOS_RFIDSender
             this.textBoxTimeNowCheckIn.BackColor = System.Drawing.Color.PowderBlue;
             this.textBoxTimeNowCheckIn.Enabled = false;
             this.textBoxTimeNowCheckIn.Font = new System.Drawing.Font("Tahoma", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxTimeNowCheckIn.Location = new System.Drawing.Point(104, 618);
+            this.textBoxTimeNowCheckIn.Location = new System.Drawing.Point(129, 756);
             this.textBoxTimeNowCheckIn.Name = "textBoxTimeNowCheckIn";
             this.textBoxTimeNowCheckIn.ReadOnly = true;
-            this.textBoxTimeNowCheckIn.Size = new System.Drawing.Size(310, 32);
+            this.textBoxTimeNowCheckIn.Size = new System.Drawing.Size(350, 32);
             this.textBoxTimeNowCheckIn.TabIndex = 12;
             this.textBoxTimeNowCheckIn.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
@@ -423,10 +425,10 @@ namespace WEBPOS_RFIDSender
             this.textBoxTimeLastCheckIn.BackColor = System.Drawing.Color.PowderBlue;
             this.textBoxTimeLastCheckIn.Enabled = false;
             this.textBoxTimeLastCheckIn.Font = new System.Drawing.Font("Tahoma", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxTimeLastCheckIn.Location = new System.Drawing.Point(104, 292);
+            this.textBoxTimeLastCheckIn.Location = new System.Drawing.Point(129, 363);
             this.textBoxTimeLastCheckIn.Name = "textBoxTimeLastCheckIn";
             this.textBoxTimeLastCheckIn.ReadOnly = true;
-            this.textBoxTimeLastCheckIn.Size = new System.Drawing.Size(310, 32);
+            this.textBoxTimeLastCheckIn.Size = new System.Drawing.Size(350, 32);
             this.textBoxTimeLastCheckIn.TabIndex = 11;
             this.textBoxTimeLastCheckIn.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.textBoxTimeLastCheckIn.TextChanged += new System.EventHandler(this.textBoxTimeLastCheckIn_TextChanged);
@@ -435,7 +437,7 @@ namespace WEBPOS_RFIDSender
             // 
             this.label12.AutoSize = true;
             this.label12.Font = new System.Drawing.Font("Tahoma", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label12.Location = new System.Drawing.Point(21, 621);
+            this.label12.Location = new System.Drawing.Point(53, 764);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(59, 24);
             this.label12.TabIndex = 10;
@@ -446,7 +448,7 @@ namespace WEBPOS_RFIDSender
             // 
             this.label11.AutoSize = true;
             this.label11.Font = new System.Drawing.Font("Tahoma", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label11.Location = new System.Drawing.Point(186, 336);
+            this.label11.Location = new System.Drawing.Point(239, 412);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(96, 24);
             this.label11.TabIndex = 9;
@@ -457,7 +459,7 @@ namespace WEBPOS_RFIDSender
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Tahoma", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(21, 300);
+            this.label6.Location = new System.Drawing.Point(53, 371);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(59, 24);
             this.label6.TabIndex = 8;
@@ -468,7 +470,7 @@ namespace WEBPOS_RFIDSender
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Tahoma", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(172, 11);
+            this.label5.Location = new System.Drawing.Point(217, 20);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(143, 24);
             this.label5.TabIndex = 7;
@@ -478,9 +480,9 @@ namespace WEBPOS_RFIDSender
             // pictureBoxNowCheckin
             // 
             this.pictureBoxNowCheckin.BackColor = System.Drawing.Color.MintCream;
-            this.pictureBoxNowCheckin.Location = new System.Drawing.Point(104, 363);
+            this.pictureBoxNowCheckin.Location = new System.Drawing.Point(129, 449);
             this.pictureBoxNowCheckin.Name = "pictureBoxNowCheckin";
-            this.pictureBoxNowCheckin.Size = new System.Drawing.Size(310, 237);
+            this.pictureBoxNowCheckin.Size = new System.Drawing.Size(350, 290);
             this.pictureBoxNowCheckin.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxNowCheckin.TabIndex = 6;
             this.pictureBoxNowCheckin.TabStop = false;
@@ -488,9 +490,9 @@ namespace WEBPOS_RFIDSender
             // pictureBoxLastCheckIn
             // 
             this.pictureBoxLastCheckIn.BackColor = System.Drawing.Color.MintCream;
-            this.pictureBoxLastCheckIn.Location = new System.Drawing.Point(104, 38);
+            this.pictureBoxLastCheckIn.Location = new System.Drawing.Point(129, 56);
             this.pictureBoxLastCheckIn.Name = "pictureBoxLastCheckIn";
-            this.pictureBoxLastCheckIn.Size = new System.Drawing.Size(310, 237);
+            this.pictureBoxLastCheckIn.Size = new System.Drawing.Size(350, 290);
             this.pictureBoxLastCheckIn.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxLastCheckIn.TabIndex = 5;
             this.pictureBoxLastCheckIn.TabStop = false;
@@ -504,7 +506,7 @@ namespace WEBPOS_RFIDSender
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
             this.BackColor = System.Drawing.Color.AliceBlue;
-            this.ClientSize = new System.Drawing.Size(1784, 891);
+            this.ClientSize = new System.Drawing.Size(1904, 1041);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panelInfo);
             this.Controls.Add(this.panel1);

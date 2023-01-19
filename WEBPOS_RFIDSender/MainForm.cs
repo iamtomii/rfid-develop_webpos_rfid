@@ -10,6 +10,7 @@ using System.Drawing;
 using System.Linq;
 using System.Collections.Generic;
 using OPOSRFIDLib;
+using System.Windows.Shapes;
 
 namespace WEBPOS_RFIDSender
 {
@@ -32,14 +33,8 @@ namespace WEBPOS_RFIDSender
         public DateTime beginTime { get; set; }
         private void Form1_Load(object sender, EventArgs e)
         {
-            if (Ischeckin)
-            {
-                this.label4.Text = "CHECK-IN";
-            }
-            else
-            {
-                this.label4.Text = "CHECK-OUT";
-            }
+
+
 
             pictureBoxmute.Load(string.Format("Images/{0}.png", "volume"));
             Process[] processes = Process.GetProcessesByName("WEBPOS_RFIDSender");
@@ -74,9 +69,39 @@ namespace WEBPOS_RFIDSender
                 GlobalVariables.cam_check.StreamVideo("0");
 
             }
-            Task.Run(() => CheckRFIDRemoved());
+            if (GlobalVariables.auto == "0")
+            {
+                this.pictureBoxCheckin.Visible = true;
+                this.hightLight_Btn.Visible = true;
+                this.label4.Visible = true;
+                if (Ischeckin)
+                {
+                    this.label4.Text = "CHECK-IN";
+                }
+                else
+                {
+                    this.label4.Text = "CHECK-OUT";
+                }
+                Task.Run(() => CheckHour());
+                Task.Run(() => CheckRFIDRemoved());
+            }
+            else
+            {
+                this.pictureBoxCheckin.Visible = false;
+                this.hightLight_Btn.Visible = false;
+                this.label4.Visible = false;
+                ReadLogRFID_checkin();
+                Console.WriteLine("TOmmyCHECK");
+                printList(GlobalVariables.list_rfid_checkin);
+                Task.Run(() => ResetCheckIn());
+                Task.Run(() => CheckRFIDReset());
+                
+
+            }
+
             Task.Run(() => playVideo());
-            Task.Run(() => CheckHour());
+
+            
 
 
         }
@@ -87,7 +112,27 @@ namespace WEBPOS_RFIDSender
 
             GlobalVariables.OPOSRFID1.DataEventEnabled = true;
         }
+        
+        public static void ReadLogRFID_checkin()
+        {
+            using (StreamReader reader = File.OpenText("Log_RFIDCheckin_data.txt"))
+            {
+                string line = "";
+                while ((line = reader.ReadLine()) != null)
+                {
+                    GlobalVariables.list_rfid_checkin.Add(line);
+                }
+            }
+        }
+        public static void resetLog_checkin()
+        {
+            if (!File.Exists("Log_RFIDCheckin_data.txt"))
+                File.Create("Log_RFIDCheckin_data.txt");
 
+            TextWriter tw = new StreamWriter("Log_RFIDCheckin_data.txt", false);
+            tw.Write(string.Empty);
+            tw.Close();
+        }
 
         public static void WriteLog(string data)
         {
@@ -110,6 +155,60 @@ namespace WEBPOS_RFIDSender
                 await Task.Delay(500);
             }
         }
+        private Task CheckRFIDReset()
+        {
+            int countTime = 0;
+            while (true)
+            {
+                Console.WriteLine("====================================");
+                printList(GlobalVariables.rfid_code);
+                printList(GlobalVariables.interval_rfid);
+                Console.WriteLine("====================================");
+                if (countTime == (int)Int64.Parse(GlobalVariables.timer_rfid)*60)
+                {
+                    GlobalVariables.rfid_code.Clear();
+                    GlobalVariables.interval_rfid.Clear();
+                    countTime = 0;
+
+                }
+                else if (countTime==5)
+                {
+                    Invoke(new Action(() =>
+                    {
+                        ClearAllinfo();
+                    }));
+                    countTime++;
+                }
+                else
+                {
+                    GlobalVariables.rfid_code.Sort();
+                    GlobalVariables.interval_rfid.Sort();
+                    if (!GlobalVariables.rfid_code.SequenceEqual(GlobalVariables.interval_rfid))
+                    {
+                        try { 
+                            foreach(String rfid in GlobalVariables.rfid_code)
+                            {
+                                if (!GlobalVariables.interval_rfid.Contains(rfid))
+                                {
+                                    GlobalVariables.interval_rfid.Add(rfid);
+                                    countTime = 0;
+                                }
+                            }
+                        }catch (Exception e) { }
+
+                      
+                    }
+                    else
+                    {
+                        countTime++;
+                    }
+                        
+                }
+                Console.WriteLine(countTime);
+                Thread.Sleep(1000);
+            }
+
+        }
         private Task CheckRFIDRemoved()
         {
             int countTime = 0;
@@ -128,6 +227,7 @@ namespace WEBPOS_RFIDSender
              
                 if (countTime == 5)
                 {
+
                     try
                     {
                         foreach (string rfid in GlobalVariables.rfid_code)
@@ -194,6 +294,23 @@ namespace WEBPOS_RFIDSender
                 
 
                 await Task.Delay(600000);
+            }
+        }
+        private async Task ResetCheckIn()
+        {
+            while (true)
+            {
+                int hour = Int16.Parse(DateTime.Now.ToString("HH"));
+
+                if (hour == GlobalVariables.time_reset_check) {
+                    GlobalVariables.list_rfid_checkin.Clear();
+                Invoke(new Action(() =>
+                {
+                    resetLog_checkin();
+                }));
+                }
+
+                await Task.Delay(3600000);
             }
         }
         void Check_Hour()

@@ -23,6 +23,10 @@ namespace WEBPOS_RFIDSender
             public string last_checkout { get; set; }
             public string last_checkin_image { get; set; }
             public string last_checkout_image { get; set; }
+            public string checkin { get; set; }
+            public string checkin_image { get; set; }
+            public string checkout { get; set; }
+            public string checkout_image { get; set; }
             public string gender { get; set; }
 
 
@@ -37,6 +41,11 @@ namespace WEBPOS_RFIDSender
             public string avatar { get; set; }
             public string phone { get; set; }
 
+        }
+        public class SignalResponse
+        {
+            public string signalexist { get; set; }
+            public string signalcheck { get; set; }
         }
 
         public async Task<InfoResponse> APIGetInfoEmployeebyID(string url_Odoo, string url_showinfo, string id)
@@ -53,6 +62,35 @@ namespace WEBPOS_RFIDSender
             var content = await client.GetStringAsync(url_Odoo + url_api_Employee + rfid);
             MyResponse json = JsonConvert.DeserializeObject<MyResponse>(content);
             return json;
+        }        
+        public async Task<SignalResponse> APIGetSignalCheckInCheckOut(string url_Odoo, string url_getsignalinout, string rfid)
+        {
+            var client = new HttpClient();
+            var content = await client.GetStringAsync(url_Odoo + url_getsignalinout + rfid);
+            SignalResponse json = JsonConvert.DeserializeObject<SignalResponse>(content);
+            return json;
+        }
+        public async Task<string>APIUpdateCheckOut(string RFID,string image,string url_Odoo,string url_updatecheckout,string dateTime_checkout)
+        {
+            string ret;
+            HttpClient api_client= new HttpClient();
+            api_client.BaseAddress = new Uri(url_Odoo);
+            api_client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            string json = System.Text.Json.JsonSerializer.Serialize(new {rfid=RFID,image=image,checkout_time=dateTime_checkout});
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var result = await api_client.PostAsync(url_updatecheckout, content);
+            string resultContent=await result.Content.ReadAsStringAsync();
+            JObject obj = JObject.Parse(resultContent);
+            if (obj.ContainsKey("result"))
+            {
+                ret = "success";
+            }
+            else
+            {
+                string message = obj["error"]["data"]["message"].ToString();
+                ret = message;
+            }
+            return ret;
         }
 
         public async Task<string> APICheckin(string RFID, string image, string url_Odoo, string url_checkin, string dateTime_checkin)
@@ -63,8 +101,6 @@ namespace WEBPOS_RFIDSender
             api_client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             string json = System.Text.Json.JsonSerializer.Serialize(new { rfid = RFID, image = image, checkin_time = dateTime_checkin });
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-            Console.WriteLine("check" + content);
-
             var result = await api_client.PostAsync(url_checkin, content);
 
             string resultContent = await result.Content.ReadAsStringAsync();

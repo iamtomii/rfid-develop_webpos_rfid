@@ -337,7 +337,12 @@ namespace WEBPOS_RFIDSender.Common
         public static string url_api_Employee;
         public static string url_Odoo;
         public static string url_checkin;
+        public static string auto;
+        public static int time_reset_check;
+        public static string url_updatecheckout;
         public static string url_checkout;
+        public static string url_getsignalinout;
+        public static string timer_rfid;
         public static string text_checkout;
         public static string text_checkin;
         public static string url_createnew;

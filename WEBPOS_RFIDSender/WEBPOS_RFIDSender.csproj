@@ -337,7 +337,9 @@
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="OPOSDevice\OposStatus.cs" />
-    <Compile Include="OPOSDevice\OPOSControl.cs" />
+    <Compile Include="OPOSDevice\OPOSControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RFID_MQ.cs" />
