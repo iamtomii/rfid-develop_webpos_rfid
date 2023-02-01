@@ -16,6 +16,7 @@ namespace WEBPOS_RFIDSender
 {
     public partial class MainForm : Form
     {
+        API_odoo.SignalResponse Signal = new API_odoo.SignalResponse();
         public MainForm()
         {
             InitializeComponent();
@@ -66,7 +67,7 @@ namespace WEBPOS_RFIDSender
             if (GlobalVariables.cam_check == null)
             {
                 GlobalVariables.cam_check = new CameraController();
-                GlobalVariables.cam_check.StreamVideo("0");
+                GlobalVariables.cam_check.StreamVideo(GlobalVariables.url_camera);
 
             }
             if (GlobalVariables.auto == "0")
@@ -84,6 +85,7 @@ namespace WEBPOS_RFIDSender
                 }
                 Task.Run(() => CheckHour());
                 Task.Run(() => CheckRFIDRemoved());
+                Task.Run(() => playVideo());
             }
             else
             {
@@ -91,15 +93,14 @@ namespace WEBPOS_RFIDSender
                 this.hightLight_Btn.Visible = false;
                 this.label4.Visible = false;
                 ReadLogRFID_checkin();
-                Console.WriteLine("TOmmyCHECK");
-                printList(GlobalVariables.list_rfid_checkin);
                 Task.Run(() => ResetCheckIn());
                 Task.Run(() => CheckRFIDReset());
-                
+                Task.Run(() => playVideo());
+
 
             }
 
-            Task.Run(() => playVideo());
+            
 
             
 
@@ -115,14 +116,21 @@ namespace WEBPOS_RFIDSender
         
         public static void ReadLogRFID_checkin()
         {
-            using (StreamReader reader = File.OpenText("Log_RFIDCheckin_data.txt"))
+            try
             {
-                string line = "";
-                while ((line = reader.ReadLine()) != null)
+                using (StreamReader reader = File.OpenText("Log_RFIDCheckin_data.txt"))
                 {
-                    GlobalVariables.list_rfid_checkin.Add(line);
+                    string line = "";
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        GlobalVariables.list_rfid_checkin.Add(line);
+                    }
                 }
+            } catch (Exception e)
+            {
+
             }
+
         }
         public static void resetLog_checkin()
         {
@@ -145,14 +153,17 @@ namespace WEBPOS_RFIDSender
         {
             while (true)
             {
-                try { 
-                   GlobalVariables.cam_check.GetImageBitmap(); 
+
+                try 
+                { 
+                   GlobalVariables.cam_check.GetImageBitmap();
+                    //pictureBoxInfo.Invoke(new Action(() => pictureBoxInfo.Image = image));
                 } catch(Exception e)
                 {
-                   
+                    Console.WriteLine(e);
                 }
                 
-                await Task.Delay(500);
+                Thread.Sleep(500);
             }
         }
         private Task CheckRFIDReset()
@@ -219,6 +230,7 @@ namespace WEBPOS_RFIDSender
                 Console.WriteLine("====================================");
                 printList(GlobalVariables.rfid_code);
                 printList(GlobalVariables.interval_rfid);
+                printList(GlobalVariables.list_rfid_checkin);
                 Console.WriteLine("====================================");
                 //if ()
                 //{
@@ -300,17 +312,30 @@ namespace WEBPOS_RFIDSender
         {
             while (true)
             {
-                int hour = Int16.Parse(DateTime.Now.ToString("HH"));
+                String hour =DateTime.Now.ToString("HH:mm:ss");
 
-                if (hour == GlobalVariables.time_reset_check) {
+                if (hour.Equals(GlobalVariables.time_reset_check)) {
+                    try
+                    {
+                        foreach (string rfid in GlobalVariables.list_rfid_checkin)
+                        {
+                            API_odoo api = new API_odoo();
+                            Signal = await api.APIGetSignalCheckInCheckOut(GlobalVariables.url_Odoo, GlobalVariables.url_getsignalinout, rfid);
+                            if (Signal.signalcheck == "checkout")
+                            {
+                                string message = await api.APIUpdateForgetCheckOut(rfid, GlobalVariables.url_Odoo, GlobalVariables.url_updateforgetcheckout);
+                            }
+                        }
+                    }
+                    catch (Exception e) { }
                     GlobalVariables.list_rfid_checkin.Clear();
-                Invoke(new Action(() =>
-                {
+                    Invoke(new Action(() =>
+                    {
                     resetLog_checkin();
-                }));
-                }
+                    }));
+                    }
 
-                await Task.Delay(3600000);
+                await Task.Delay(1000);
             }
         }
         void Check_Hour()

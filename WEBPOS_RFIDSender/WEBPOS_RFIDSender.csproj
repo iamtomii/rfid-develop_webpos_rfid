@@ -408,6 +408,7 @@
   <ItemGroup>
     <Content Include="AI POWER.ico" />
     <Content Include="logo.ico" />
+    <Content Include="Resource_RFID\error.png" />
     <Content Include="TitleState\payment.jpg" />
     <Content Include="TitleState\pre_scan.jpg" />
     <Content Include="TitleState\scanning.jpg" />

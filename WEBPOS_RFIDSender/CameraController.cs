@@ -98,20 +98,26 @@ namespace WEBPOS_RFIDSender
 
             Bitmap frame = new Bitmap(100, 100);
             Mat currentFrame = capture.RetrieveMat();
-            if (currentFrame != null)
+            if (!currentFrame.Empty())
             {
                 frame = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(currentFrame);
+
             }
 
             return frame;
 
         }
 
-        public Image stringToImage(string inputString)
+        public Image stringToImage(string inputString)           
         {
+
             Image image = new Bitmap(100, 1000);
 
             if (string.IsNullOrEmpty(inputString))
+            {
+                return image;
+            }
+            if (inputString.Equals("False"))
             {
                 return image;
             }

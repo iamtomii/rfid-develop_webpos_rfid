@@ -116,9 +116,10 @@ namespace WEBPOS_RFIDSender.Common
             GlobalVariables.webpos_app_path = dataInFile["webpos_app_path"];
             GlobalVariables.url_Odoo = dataInFile["url_Odoo"];
             GlobalVariables.url_updatecheckout = dataInFile["url_updatecheckout"];
+            GlobalVariables.url_updateforgetcheckout = dataInFile["url_updateforgetcheckout"];
             GlobalVariables.url_checkin = dataInFile["url_checkin"];
             GlobalVariables.url_createnew = dataInFile["url_createnew"];
-            GlobalVariables.time_reset_check = (int)Int64.Parse(dataInFile["time_reset_check"]);
+            GlobalVariables.time_reset_check = dataInFile["time_reset_check"];
             GlobalVariables.hours_change = (int)Int64.Parse(dataInFile["hours_change"]);
             GlobalVariables.text_checkin = dataInFile["text_checkin"];
             GlobalVariables.text_checkout = dataInFile["text_checkout"];

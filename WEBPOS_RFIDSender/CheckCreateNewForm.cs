@@ -52,10 +52,15 @@ namespace WEBPOS_RFIDSender
         }
         public System.Drawing.Image stringToImage(string inputString)
         {
+
             Char[] listTrim = { 'b', '\'' };
             inputString = inputString.Trim(listTrim);
             System.Drawing.Image image = new Bitmap(100, 1000);
             if (string.IsNullOrEmpty(inputString))
+            {
+                return image;
+            }
+            if (inputString.Equals("False"))
             {
                 return image;
             }

@@ -19,6 +19,7 @@ namespace WEBPOS_RFIDSender
             public string name { get; set; }
             public string avatar { get; set; }
             public string department { get; set; }
+            public string gender { get; set; }
             public string last_checkin { get; set; }
             public string last_checkout { get; set; }
             public string last_checkin_image { get; set; }
@@ -27,7 +28,7 @@ namespace WEBPOS_RFIDSender
             public string checkin_image { get; set; }
             public string checkout { get; set; }
             public string checkout_image { get; set; }
-            public string gender { get; set; }
+            
 
 
         }
@@ -148,6 +149,30 @@ namespace WEBPOS_RFIDSender
             return ret;
 
 
+        }
+
+        public async Task<string> APIUpdateForgetCheckOut(string RFID,string url_Odoo, string url_updateforgetcheckout)
+        {
+            string ret;
+            HttpClient api_client = new HttpClient();
+            api_client.BaseAddress = new Uri(url_Odoo);
+            api_client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            string json = System.Text.Json.JsonSerializer.Serialize(new { rfid = RFID});
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var result = await api_client.PostAsync(url_updateforgetcheckout, content);
+            string resultContent = await result.Content.ReadAsStringAsync();
+            JObject obj = JObject.Parse(resultContent);
+            if (obj.ContainsKey("result"))
+            {
+                ret = "success";
+            }
+            else
+            {
+                string message = obj["error"]["data"]["message"].ToString();
+                ret = message;
+            }
+
+            return ret;
         }
         public async Task<string> APICreateNewRFIDEMployee(string id, string rfid,string url_Odoo, string url_createnew)
         {

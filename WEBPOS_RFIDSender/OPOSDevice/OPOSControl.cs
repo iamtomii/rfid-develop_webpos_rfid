@@ -53,7 +53,7 @@ namespace WEBPOS_RFIDSender.OposControl
             if (GlobalVariables.cam_check == null)
             {
                 GlobalVariables.cam_check = new CameraController();
-                GlobalVariables.cam_check.StreamVideo("0");
+                GlobalVariables.cam_check.StreamVideo(GlobalVariables.url_camera);
 
             }
             WindowAPI.PostMessage(IntPtr.Zero, (uint)GlobalVariables.WM_KEYDOWN, (int)(System.Enum.Parse(typeof(GlobalVariables.Keys), "Return")), (int)(0));
@@ -101,7 +101,7 @@ namespace WEBPOS_RFIDSender.OposControl
                     else
                     {
                         try { 
-                            foreach (String rfid in GlobalVariables.rfid_code) {
+                            foreach (String rfid in GlobalVariables.rfid_code.ToList()) {
                                 if (!(rfid.Contains(new_code)))
                                 {
                                     GlobalVariables.rfid_code.Remove(rfid);
@@ -109,7 +109,10 @@ namespace WEBPOS_RFIDSender.OposControl
                             
                             }
                         
-                        } catch (Exception){ }
+                        } catch (Exception error)
+                        {
+                            Console.WriteLine(error);
+                        }
                         GlobalVariables.interval_rfid.Clear();
 
                         showInfoAutoResetAsync(new_code);
@@ -123,16 +126,14 @@ namespace WEBPOS_RFIDSender.OposControl
         }
         public async void WriteLogRFID_checkout(string data)
         {
-            using (TextWriter writer = new StreamWriter("Log_data.txt", true))  // true is for append mode
+            using (TextWriter writer = new StreamWriter("Log_RFIDCheckin_data.txt", true))  // true is for append mode
             {
                 writer.WriteLine(data);
             }
         }
         private async Task showInfoAutoResetAsync(string new_code)
         {
-            API_odoo api = new API_odoo();
-            Console.WriteLine("tommy check");
-            
+            API_odoo api = new API_odoo();         
             if (!GlobalVariables.list_rfid_checkin.Contains(new_code))
             {
                 String image_checkin = GlobalVariables.cam_check.GetImage();
@@ -346,7 +347,7 @@ namespace WEBPOS_RFIDSender.OposControl
                         Program.mainForm.pictureBoxNowCheckout.Image = null;
                         Program.mainForm.textBoxNowCheckOut.Clear();
                         //Task.Run(() => speak_checkin(infoEmp));
-                        Task.Run(() => speakGoogle(infoEmp, GlobalVariables.text_checkin));
+                        //Task.Run(() => speakGoogle(infoEmp, GlobalVariables.text_checkin));
 
                     }
                     else if (message.Contains("Cannot create new attendance"))
@@ -409,7 +410,7 @@ namespace WEBPOS_RFIDSender.OposControl
                         Program.mainForm.notice.ForeColor = Color.DarkGreen;
                         Program.mainForm.notice.Text = string.Format("Goodbye {0}! Thanks for your hardwork!", infoEmp.name.Split(' ').ToList().Last());
 
-                        Task.Run(() => speakGoogle(infoEmp, GlobalVariables.text_checkout));
+                        //Task.Run(() => speakGoogle(infoEmp, GlobalVariables.text_checkout));
                     }
                     else if (message.Contains("Employee already checked-out"))
                     {
