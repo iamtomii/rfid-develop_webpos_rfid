@@ -49,6 +49,7 @@ namespace WEBPOS_RFIDSender
             labelid.Text = null;
             labeldeparment.Text = null;
             pictureBoxavatar.Image = null;
+
         }
         public System.Drawing.Image stringToImage(string inputString)
         {
@@ -175,6 +176,11 @@ namespace WEBPOS_RFIDSender
                 labeldeparment.Text = null;
                 pictureBoxavatar.Image = null;
             }
+        }
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }

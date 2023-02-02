@@ -98,6 +98,7 @@ namespace WEBPOS_RFIDSender.OposControl
                         }
                         showInfoAsync(new_code);
                     }
+
                     else
                     {
                         try { 
@@ -177,8 +178,12 @@ namespace WEBPOS_RFIDSender.OposControl
                     }
                     Program.mainForm.notice.ForeColor = Color.Crimson;
                     Program.mainForm.notice.Text = " Cannot find your information";
-                    checkdialog.RFID_exist = new_code;
-                    checkdialog.ShowDialog();
+                    if(!(GlobalVariables.auto == "2"))
+                    {
+                        checkdialog.RFID_exist = new_code;
+                        checkdialog.ShowDialog();
+                    }
+                    
                 }
 
             }
@@ -206,8 +211,11 @@ namespace WEBPOS_RFIDSender.OposControl
                 {
                     Program.mainForm.notice.ForeColor = Color.Crimson;
                     Program.mainForm.notice.Text = " Cannot find your information";
-                    checkdialog.RFID_exist = new_code;
-                    checkdialog.ShowDialog();
+                    if (!(GlobalVariables.auto == "2"))
+                    {
+                        checkdialog.RFID_exist = new_code;
+                        checkdialog.ShowDialog();
+                    }
                 }
                 else
                 {
@@ -585,6 +593,11 @@ namespace WEBPOS_RFIDSender.OposControl
                 Char[] listTrim = { 'b', '\'' };
                 image = image.Trim(listTrim);
                 Program.mainForm.pictureBoxInfo.Image = GlobalVariables.cam_check.stringToImage(image);
+            }
+            else
+            {
+                Image NoImageLoad = Image.FromFile("Resource_RFID/noimage.png");
+                Program.mainForm.pictureBoxInfo.Image = NoImageLoad;
             }
             //  ShowInfo_Object.avatar.Image = GlobalData.Cam1.stringToImage(image);
 

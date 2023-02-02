@@ -96,8 +96,6 @@ namespace WEBPOS_RFIDSender
                 Task.Run(() => ResetCheckIn());
                 Task.Run(() => CheckRFIDReset());
                 Task.Run(() => playVideo());
-
-
             }
 
             
