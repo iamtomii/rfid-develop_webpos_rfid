@@ -51,18 +51,12 @@ namespace RFIDAttendance.OposControl
             WindowAPI.PostMessage(IntPtr.Zero, (uint)GlobalVariables.WM_KEYDOWN, (int)(System.Enum.Parse(typeof(GlobalVariables.Keys), "Return")), (int)(0));
             int TagCount;
             string UserData;
-            /*HttpClient api_client = new HttpClient();
-            api_client.BaseAddress = new Uri(GlobalVariables.url_api);
-            api_client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));*/
             // TagCount
             TagCount = GlobalVariables.OPOSRFID1.TagCount;
-
-            var loopTo = TagCount;
             TagCount = GlobalVariables.OPOSRFID1.TagCount;
 
             for (int i = 0; i < TagCount; i++)
             {
-                //var code_value = OPOSRFID1.CurrentTagID;
                 UserData = " Userdata=" + GlobalVariables.OPOSRFID1.CurrentTagUserData;
 
                 if (UserData == " Userdata=")
@@ -71,17 +65,10 @@ namespace RFIDAttendance.OposControl
                 }
                 var code_value = GlobalVariables.OPOSRFID1.CurrentTagID + UserData;
                 string new_code = ConvertTagIDCode(code_value);
-
-                //take book out
-
-
                 if (!GlobalVariables.rfid_code.Contains(new_code))
                 {
                     Console.WriteLine("RFID CODE: " + new_code);
-                    //Program.mainForm.infoLog.Invoke(new Action(() => Program.mainForm.infoLog.AppendText(String.Format("{0}\r\n", new_code))));
-
                     GlobalVariables.rfid_code.Add(new_code);
-                    //call API
                     if (GlobalVariables.auto == "0")
                     {
                         if (!GlobalVariables.interval_rfid.Contains(new_code))
@@ -105,6 +92,7 @@ namespace RFIDAttendance.OposControl
                         } catch (Exception error)
                         {
                             Console.WriteLine(error);
+                            MainForm.WriteLogE(error);
                         }
                         GlobalVariables.interval_rfid.Clear();
 
@@ -117,6 +105,8 @@ namespace RFIDAttendance.OposControl
             }
             GlobalVariables.OPOSRFID1.DataEventEnabled = true;
         }
+        /* Write log RFID checkin data  
+         */
         public async void WriteLogRFID_checkout(string data)
         {
             using (TextWriter writer = new StreamWriter("Log_RFIDCheckin_data.txt", true))  // true is for append mode
@@ -124,213 +114,225 @@ namespace RFIDAttendance.OposControl
                 writer.WriteLine(data);
             }
         }
+         /*Mode 1 and 2 (config auto=1 or 2) showdialog info checkin checkout button auto
+           auto 1: have create new employee
+           auto 2: have'n create new employee          */    
         private async Task showInfoAutoResetAsync(string new_code)
         {
-            API_odoo api = new API_odoo();         
-            if (!GlobalVariables.list_rfid_checkin.Contains(new_code))
+            try
             {
-                String image_checkin = GlobalVariables.cam_check.GetImage();
-                Console.WriteLine(image_checkin);
-                //String image_checkin = GlobalData.Cam1.GetImage();
-                string dateTime_checkin = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                string message = await api.APICheckin(new_code, image_checkin, GlobalVariables.url_Odoo, GlobalVariables.url_checkin, dateTime_checkin);
-                string time_session = Int16.Parse(DateTime.Now.ToString("HH")) < 12 ? "morning" : "afternoon";
-                if (message == "success")
+                API_odoo api = new API_odoo();
+                if (!GlobalVariables.list_rfid_checkin.Contains(new_code))
                 {
-                    GlobalVariables.list_rfid_checkin.Add(new_code);
-                    Task.Run(() => WriteLogRFID_checkout(new_code));
-                    // interval_rfid.Add(new_code);
-                    infoEmp = await api.APIGetInfoEmployee(GlobalVariables.url_Odoo, GlobalVariables.url_api_Employee, new_code);
-                    Update_Info_Now_Checkin(infoEmp, dateTime_checkin);
-                    Update_Info_Recently_CheckINCheckOUT(infoEmp);
-                    Program.mainForm.pictureBoxNowCheckin.Image = GlobalVariables.cam_check.stringToImage(image_checkin);
-                    //  ShowInfo_Object.pictureBox_now_Checkin.Image = GlobalData.Cam1.stringToImage(image_checkin);
-                    Program.mainForm.notice.ForeColor = Color.DarkGreen;
-                    Program.mainForm.notice.Text = string.Format("Good {0} {1}! Hope you have a good day!", time_session, infoEmp.name.Split(' ').ToList().Last());
-                    Program.mainForm.pictureBoxNowCheckout.Image = null;
-                    Program.mainForm.textBoxNowCheckOut.Clear();
-                    //Task.Run(() => speak_checkin(infoEmp));
-                    if (!(GlobalVariables.Ismutecheckin))
+                    String image_checkin = GlobalVariables.cam_check.GetImage();
+                    Console.WriteLine(image_checkin);
+                    //String image_checkin = GlobalData.Cam1.GetImage();
+                    string dateTime_checkin = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                    string message = await api.APICheckin(new_code, image_checkin, GlobalVariables.url_Odoo, GlobalVariables.url_checkin, dateTime_checkin);
+                    string time_session = Int16.Parse(DateTime.Now.ToString("HH")) < 12 ? "morning" : "afternoon";
+                    if (message == "success")
                     {
-                        Task.Run(() => speakGoogle(infoEmp, GlobalVariables.text_checkin));
-                    }                    
-                }
-                else if (message.Contains("Cannot create new attendance"))
-                {
-                    Program.mainForm.pictureBoxNowCheckin.Image = null;
-                    Program.mainForm.textBoxTimeNowCheckIn.Clear();
-                    Program.mainForm.notice.ForeColor = Color.Crimson;
-                    Program.mainForm.notice.Text = "You have checkin already!\r\nPlease check your last information";
-                    infoEmp = await api.APIGetInfoEmployee(GlobalVariables.url_Odoo, GlobalVariables.url_api_Employee, new_code);
-                    Update_Info_REcently_CheckINCheckOUT_haveAVATAR(infoEmp);
-                }
-                else if (message.Contains("Can not find employee"))
-                {
+                        GlobalVariables.list_rfid_checkin.Add(new_code);
+                        Task.Run(() => WriteLogRFID_checkout(new_code));
+                        // interval_rfid.Add(new_code);
+                        infoEmp = await api.APIGetInfoEmployee(GlobalVariables.url_Odoo, GlobalVariables.url_api_Employee, new_code);
+                        Update_Info_Now_Checkin(infoEmp, dateTime_checkin);
+                        Update_Info_Recently_CheckINCheckOUT(infoEmp);
+                        Program.mainForm.pictureBoxNowCheckin.Image = GlobalVariables.cam_check.stringToImage(image_checkin);
+                        //  ShowInfo_Object.pictureBox_now_Checkin.Image = GlobalData.Cam1.stringToImage(image_checkin);
+                        Program.mainForm.notice.ForeColor = Color.DarkGreen;
+                        Program.mainForm.notice.Text = string.Format("Good {0} {1}! Hope you have a good day!", time_session, infoEmp.name.Split(' ').ToList().Last());
+                        Program.mainForm.pictureBoxNowCheckout.Image = null;
+                        Program.mainForm.textBoxNowCheckOut.Clear();
+                        //Task.Run(() => speak_checkin(infoEmp));
+                        if (!(GlobalVariables.Ismutecheckin))
+                        {
+                            Task.Run(() => speakGoogle(infoEmp, GlobalVariables.text_checkin));
+                        }
+                    }
+                    else if (message.Contains("Cannot create new attendance"))
+                    {
+                        Program.mainForm.pictureBoxNowCheckin.Image = null;
+                        Program.mainForm.textBoxTimeNowCheckIn.Clear();
+                        Program.mainForm.notice.ForeColor = Color.Crimson;
+                        Program.mainForm.notice.Text = "You have checkin already!\r\nPlease check your last information";
+                        infoEmp = await api.APIGetInfoEmployee(GlobalVariables.url_Odoo, GlobalVariables.url_api_Employee, new_code);
+                        Update_Info_REcently_CheckINCheckOUT_haveAVATAR(infoEmp);
+                    }
+                    else if (message.Contains("Can not find employee"))
+                    {
 
-                    if (Program.mainForm.pictureBoxInfo != null)
-                    {
-                        Program.mainForm.ClearAllinfo();
-                    }
-                    Program.mainForm.notice.ForeColor = Color.Crimson;
-                    Program.mainForm.notice.Text = " Cannot find your information";
-                    if(!(GlobalVariables.auto == "2"))
-                    {
-                        checkdialog.RFID_exist = new_code;
-                        checkdialog.ShowDialog();
-                    }
-                    
-                }
+                        if (Program.mainForm.pictureBoxInfo != null)
+                        {
+                            Program.mainForm.ClearAllinfo();
+                        }
+                        Program.mainForm.notice.ForeColor = Color.Crimson;
+                        Program.mainForm.notice.Text = " Cannot find your information";
+                        if (!(GlobalVariables.auto == "2"))
+                        {
+                            checkdialog.RFID_exist = new_code;
+                            checkdialog.ShowDialog();
+                        }
 
-            }
-            else
-            {
-                String image_checkout = GlobalVariables.cam_check.GetImage();
-                Console.WriteLine(image_checkout);
-                string dateTime_checkout = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                string message = await api.APIUpdateCheckOut(new_code, image_checkout, GlobalVariables.url_Odoo, GlobalVariables.url_updatecheckout, dateTime_checkout);
-                if (message == "success")
-                {
-                    infoEmp = await api.APIGetInfoEmployee(GlobalVariables.url_Odoo, GlobalVariables.url_api_Employee, new_code);
-                    Program.mainForm.textBoxTimeNowCheckIn.Clear();
-                    Program.mainForm.pictureBoxNowCheckin.Image = null;
-                    Update_Info_Now_Checkout(infoEmp, dateTime_checkout);
-                    updateImageCheckin(infoEmp);
-                    Update_Info_Recently_CheckINCheckOUT(infoEmp);
-                    Program.mainForm.pictureBoxNowCheckout.Image = GlobalVariables.cam_check.stringToImage(image_checkout);
-                    Program.mainForm.notice.ForeColor = Color.DarkGreen;
-                    Program.mainForm.notice.Text = string.Format("Goodbye {0}! Thanks for your hardwork!", infoEmp.name.Split(' ').ToList().Last());
-                    if (!(GlobalVariables.Ismutecheckout))
-                    {
-                        Task.Run(() => speakGoogle(infoEmp, GlobalVariables.text_checkout));
-                    }            
-                }
-                else if (message.Contains("Can not find employee"))
-                {
-                    Program.mainForm.notice.ForeColor = Color.Crimson;
-                    Program.mainForm.notice.Text = " Cannot find your information";
-                    if (!(GlobalVariables.auto == "2"))
-                    {
-                        checkdialog.RFID_exist = new_code;
-                        checkdialog.ShowDialog();
                     }
+
                 }
                 else
                 {
-                    Program.mainForm.notice.Text = "Api error";
-                }
-
-            }
-        }
-        private async Task showInfoAutoAsync(String new_code)
-        {
-            API_odoo api = new API_odoo();
-            Signal = await api.APIGetSignalCheckInCheckOut(GlobalVariables.url_Odoo,GlobalVariables.url_getsignalinout,new_code);
-            if (Signal.signalcheck.Equals("checkin"))
-            {
-                String image_checkin = GlobalVariables.cam_check.GetImage();
-
-                Console.WriteLine(image_checkin);
-                //String image_checkin = GlobalData.Cam1.GetImage();
-                string dateTime_checkin = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                string message = await api.APICheckin(new_code, image_checkin, GlobalVariables.url_Odoo, GlobalVariables.url_checkin, dateTime_checkin);
-
-                string time_session = Int16.Parse(DateTime.Now.ToString("HH")) < 12 ? "morning" : "afternoon";
-                if (message == "success")
-                {
-                    // interval_rfid.Add(new_code);
-                    infoEmp = await api.APIGetInfoEmployee(GlobalVariables.url_Odoo, GlobalVariables.url_api_Employee, new_code);
-                    GlobalVariables.list_rfid_checkout.Remove(new_code);
-                    GlobalVariables.list_rfid_checkin.Add(new_code);
-                    Update_Info_Now_Checkin(infoEmp, dateTime_checkin);
-                    Update_Info_Recently_CheckINCheckOUT(infoEmp);
-                    Program.mainForm.pictureBoxNowCheckin.Image = GlobalVariables.cam_check.stringToImage(image_checkin);
-                    //  ShowInfo_Object.pictureBox_now_Checkin.Image = GlobalData.Cam1.stringToImage(image_checkin);
-                    Program.mainForm.notice.ForeColor = Color.DarkGreen;
-                    Program.mainForm.notice.Text = string.Format("Good {0} {1}! Hope you have a good day!", time_session, infoEmp.name.Split(' ').ToList().Last());
-                    Program.mainForm.pictureBoxNowCheckout.Image = null;
-                    Program.mainForm.textBoxNowCheckOut.Clear();
-                    //Task.Run(() => speak_checkin(infoEmp));
-                    if (!(GlobalVariables.Ismutecheckin))
+                    String image_checkout = GlobalVariables.cam_check.GetImage();
+                    Console.WriteLine(image_checkout);
+                    string dateTime_checkout = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                    string message = await api.APIUpdateCheckOut(new_code, image_checkout, GlobalVariables.url_Odoo, GlobalVariables.url_updatecheckout, dateTime_checkout);
+                    if (message == "success")
                     {
-                        Task.Run(() => speakGoogle(infoEmp, GlobalVariables.text_checkin));
+                        infoEmp = await api.APIGetInfoEmployee(GlobalVariables.url_Odoo, GlobalVariables.url_api_Employee, new_code);
+                        Program.mainForm.textBoxTimeNowCheckIn.Clear();
+                        Program.mainForm.pictureBoxNowCheckin.Image = null;
+                        Update_Info_Now_Checkout(infoEmp, dateTime_checkout);
+                        updateImageCheckin(infoEmp);
+                        Update_Info_Recently_CheckINCheckOUT(infoEmp);
+                        Program.mainForm.pictureBoxNowCheckout.Image = GlobalVariables.cam_check.stringToImage(image_checkout);
+                        Program.mainForm.notice.ForeColor = Color.DarkGreen;
+                        Program.mainForm.notice.Text = string.Format("Goodbye {0}! Thanks for your hardwork!", infoEmp.name.Split(' ').ToList().Last());
+                        if (!(GlobalVariables.Ismutecheckout))
+                        {
+                            Task.Run(() => speakGoogle(infoEmp, GlobalVariables.text_checkout));
+                        }
                     }
-                }
-                else if (message.Contains("Cannot create new attendance"))
-                {
-                    Program.mainForm.pictureBoxNowCheckin.Image = null;
-                    Program.mainForm.textBoxTimeNowCheckIn.Clear();
-                    Program.mainForm.notice.ForeColor = Color.Crimson;
-                    Program.mainForm.notice.Text = "You have checkin already!\r\nPlease check your last information";
-                    infoEmp = await api.APIGetInfoEmployee(GlobalVariables.url_Odoo, GlobalVariables.url_api_Employee, new_code);
-                    Update_Info_REcently_CheckINCheckOUT_haveAVATAR(infoEmp);
-                }
-                else if (message.Contains("Can not find employee"))
-                {
-
-                    if (Program.mainForm.pictureBoxInfo != null)
+                    else if (message.Contains("Can not find employee"))
                     {
-                        Program.mainForm.ClearAllinfo();
+                        Program.mainForm.notice.ForeColor = Color.Crimson;
+                        Program.mainForm.notice.Text = " Cannot find your information";
+                        if (!(GlobalVariables.auto == "2"))
+                        {
+                            checkdialog.RFID_exist = new_code;
+                            checkdialog.ShowDialog();
+                        }
                     }
-                    Program.mainForm.notice.ForeColor = Color.Crimson;
-                    Program.mainForm.notice.Text = " Cannot find your information";
-                    checkdialog.RFID_exist = new_code;
-                    checkdialog.ShowDialog();
+                    else
+                    {
+                        Program.mainForm.notice.Text = "Api error";
+                    }
 
                 }
             }
-            else if (Signal.signalcheck.Equals("checkout"))
-            {
-                String image_checkout = GlobalVariables.cam_check.GetImage();
-                Console.WriteLine(image_checkout);
-                string dateTime_checkout = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                string message = await api.APICheckout(new_code, image_checkout, GlobalVariables.url_Odoo, GlobalVariables.url_checkout, dateTime_checkout);
-                if (message == "success")
-                {
-                    infoEmp = await api.APIGetInfoEmployee(GlobalVariables.url_Odoo, GlobalVariables.url_api_Employee, new_code);
-                    GlobalVariables.list_rfid_checkin.Remove(new_code);
-                    GlobalVariables.list_rfid_checkout.Add(new_code);
-                    Update_Info_Now_Checkout(infoEmp, dateTime_checkout);
-                    Update_Info_Recently_CheckINCheckOUT(infoEmp);
-                    Program.mainForm.pictureBoxNowCheckout.Image = GlobalVariables.cam_check.stringToImage(image_checkout);
-                    Program.mainForm.notice.ForeColor = Color.DarkGreen;
-                    Program.mainForm.notice.Text = string.Format("Goodbye {0}! Thanks for your hardwork!", infoEmp.name.Split(' ').ToList().Last());
-                    Program.mainForm.textBoxTimeNowCheckIn.Clear();
-                    Program.mainForm.pictureBoxNowCheckin.Image = null;
-                    Task.Run(() => speakGoogle(infoEmp, GlobalVariables.text_checkout));
-                }
-                else if (message.Contains("Employee already checked-out"))
-                {
-                    Program.mainForm.pictureBoxNowCheckout.Image = null;
-                    Program.mainForm.textBoxNowCheckOut.Clear();
-                    Program.mainForm.notice.ForeColor = Color.Crimson;
-                    Program.mainForm.notice.Text = "You have checkout already!\r\nPlease check your last information";
-                    infoEmp = await api.APIGetInfoEmployee(GlobalVariables.url_Odoo, GlobalVariables.url_api_Employee, new_code);
-                    Update_Info_REcently_CheckINCheckOUT_haveAVATAR(infoEmp);
-                }
-                else if (message.Contains("Can not find employee"))
-                {
-                    Program.mainForm.notice.ForeColor = Color.Crimson;
-                    Program.mainForm.notice.Text = " Cannot find your information";
-                    checkdialog.RFID_exist = new_code;
-                    checkdialog.ShowDialog();
-                }
-                else
-                {
-                    Program.mainForm.notice.Text = "Api error";
-                }
-
-            }
-            else
-            {
-                Program.mainForm.notice.ForeColor = Color.Crimson;
-                Program.mainForm.notice.Text = " Cannot find your information";
-                checkdialog.RFID_exist = new_code;
-                checkdialog.ShowDialog();
-            }
+            catch(Exception error) {
+                MainForm.WriteLogE(error);
+                    }
+            
         }
 
+        //private async Task showInfoAutoAsync(String new_code)
+        //{
+        //    API_odoo api = new API_odoo();
+        //    Signal = await api.APIGetSignalCheckInCheckOut(GlobalVariables.url_Odoo,GlobalVariables.url_getsignalinout,new_code);
+        //    if (Signal.signalcheck.Equals("checkin"))
+        //    {
+        //        String image_checkin = GlobalVariables.cam_check.GetImage();
+
+        //        Console.WriteLine(image_checkin);
+        //        //String image_checkin = GlobalData.Cam1.GetImage();
+        //        string dateTime_checkin = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+        //        string message = await api.APICheckin(new_code, image_checkin, GlobalVariables.url_Odoo, GlobalVariables.url_checkin, dateTime_checkin);
+
+        //        string time_session = Int16.Parse(DateTime.Now.ToString("HH")) < 12 ? "morning" : "afternoon";
+        //        if (message == "success")
+        //        {
+        //            // interval_rfid.Add(new_code);
+        //            infoEmp = await api.APIGetInfoEmployee(GlobalVariables.url_Odoo, GlobalVariables.url_api_Employee, new_code);
+        //            GlobalVariables.list_rfid_checkout.Remove(new_code);
+        //            GlobalVariables.list_rfid_checkin.Add(new_code);
+        //            Update_Info_Now_Checkin(infoEmp, dateTime_checkin);
+        //            Update_Info_Recently_CheckINCheckOUT(infoEmp);
+        //            Program.mainForm.pictureBoxNowCheckin.Image = GlobalVariables.cam_check.stringToImage(image_checkin);
+        //            //  ShowInfo_Object.pictureBox_now_Checkin.Image = GlobalData.Cam1.stringToImage(image_checkin);
+        //            Program.mainForm.notice.ForeColor = Color.DarkGreen;
+        //            Program.mainForm.notice.Text = string.Format("Good {0} {1}! Hope you have a good day!", time_session, infoEmp.name.Split(' ').ToList().Last());
+        //            Program.mainForm.pictureBoxNowCheckout.Image = null;
+        //            Program.mainForm.textBoxNowCheckOut.Clear();
+        //            //Task.Run(() => speak_checkin(infoEmp));
+        //            if (!(GlobalVariables.Ismutecheckin))
+        //            {
+        //                Task.Run(() => speakGoogle(infoEmp, GlobalVariables.text_checkin));
+        //            }
+        //        }
+        //        else if (message.Contains("Cannot create new attendance"))
+        //        {
+        //            Program.mainForm.pictureBoxNowCheckin.Image = null;
+        //            Program.mainForm.textBoxTimeNowCheckIn.Clear();
+        //            Program.mainForm.notice.ForeColor = Color.Crimson;
+        //            Program.mainForm.notice.Text = "You have checkin already!\r\nPlease check your last information";
+        //            infoEmp = await api.APIGetInfoEmployee(GlobalVariables.url_Odoo, GlobalVariables.url_api_Employee, new_code);
+        //            Update_Info_REcently_CheckINCheckOUT_haveAVATAR(infoEmp);
+        //        }
+        //        else if (message.Contains("Can not find employee"))
+        //        {
+
+        //            if (Program.mainForm.pictureBoxInfo != null)
+        //            {
+        //                Program.mainForm.ClearAllinfo();
+        //            }
+        //            Program.mainForm.notice.ForeColor = Color.Crimson;
+        //            Program.mainForm.notice.Text = " Cannot find your information";
+        //            checkdialog.RFID_exist = new_code;
+        //            checkdialog.ShowDialog();
+
+        //        }
+        //    }
+        //    else if (Signal.signalcheck.Equals("checkout"))
+        //    {
+        //        String image_checkout = GlobalVariables.cam_check.GetImage();
+        //        Console.WriteLine(image_checkout);
+        //        string dateTime_checkout = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+        //        string message = await api.APICheckout(new_code, image_checkout, GlobalVariables.url_Odoo, GlobalVariables.url_checkout, dateTime_checkout);
+        //        if (message == "success")
+        //        {
+        //            infoEmp = await api.APIGetInfoEmployee(GlobalVariables.url_Odoo, GlobalVariables.url_api_Employee, new_code);
+        //            GlobalVariables.list_rfid_checkin.Remove(new_code);
+        //            GlobalVariables.list_rfid_checkout.Add(new_code);
+        //            Update_Info_Now_Checkout(infoEmp, dateTime_checkout);
+        //            Update_Info_Recently_CheckINCheckOUT(infoEmp);
+        //            Program.mainForm.pictureBoxNowCheckout.Image = GlobalVariables.cam_check.stringToImage(image_checkout);
+        //            Program.mainForm.notice.ForeColor = Color.DarkGreen;
+        //            Program.mainForm.notice.Text = string.Format("Goodbye {0}! Thanks for your hardwork!", infoEmp.name.Split(' ').ToList().Last());
+        //            Program.mainForm.textBoxTimeNowCheckIn.Clear();
+        //            Program.mainForm.pictureBoxNowCheckin.Image = null;
+        //            Task.Run(() => speakGoogle(infoEmp, GlobalVariables.text_checkout));
+        //        }
+        //        else if (message.Contains("Employee already checked-out"))
+        //        {
+        //            Program.mainForm.pictureBoxNowCheckout.Image = null;
+        //            Program.mainForm.textBoxNowCheckOut.Clear();
+        //            Program.mainForm.notice.ForeColor = Color.Crimson;
+        //            Program.mainForm.notice.Text = "You have checkout already!\r\nPlease check your last information";
+        //            infoEmp = await api.APIGetInfoEmployee(GlobalVariables.url_Odoo, GlobalVariables.url_api_Employee, new_code);
+        //            Update_Info_REcently_CheckINCheckOUT_haveAVATAR(infoEmp);
+        //        }
+        //        else if (message.Contains("Can not find employee"))
+        //        {
+        //            Program.mainForm.notice.ForeColor = Color.Crimson;
+        //            Program.mainForm.notice.Text = " Cannot find your information";
+        //            checkdialog.RFID_exist = new_code;
+        //            checkdialog.ShowDialog();
+        //        }
+        //        else
+        //        {
+        //            Program.mainForm.notice.Text = "Api error";
+        //        }
+
+        //    }
+        //    else
+        //    {
+        //        Program.mainForm.notice.ForeColor = Color.Crimson;
+        //        Program.mainForm.notice.Text = " Cannot find your information";
+        //        checkdialog.RFID_exist = new_code;
+        //        checkdialog.ShowDialog();
+        //    }
+        //}
+        /*Mode 0 (config auto=0) showdialog info checkin checkout button not auto*/
         private async Task showInfoAsync(String new_code)
         {
+            try { 
             API_odoo api = new API_odoo();
             if (Program.mainForm.Ischeckin)
             {
@@ -450,8 +452,9 @@ namespace RFIDAttendance.OposControl
                         GlobalVariables.interval_rfid.Remove(new_code);
                 }
             }
-
+            } catch(Exception e) { MainForm.WriteLogE(e); }
         }
+        /*Set power atena */
         public void setAtenaPower(AxOPOSRFID OPOSRFID1, string strCSV)
         {
             //string strCSV = "";
@@ -473,19 +476,22 @@ namespace RFIDAttendance.OposControl
         }
 
 
-        private async Task speak_checkin(API_odoo.MyResponse infoEmp)
-        {
-            var synthesizer = new SpeechSynthesizer();
-            synthesizer.SetOutputToDefaultAudioDevice();
-            synthesizer.Speak("Hello" + infoEmp.name);
-        }
+        //private async Task speak_checkin(API_odoo.MyResponse infoEmp)
+        //{
+        //    var synthesizer = new SpeechSynthesizer();
+        //    synthesizer.SetOutputToDefaultAudioDevice();
+        //    synthesizer.Speak("Hello" + infoEmp.name);
+        //}
 
-        private void speak_checkout(API_odoo.MyResponse infoEmp)
-        {
-            var synthesizer = new SpeechSynthesizer();
-            synthesizer.SetOutputToDefaultAudioDevice();
-            synthesizer.Speak("Goodbye" + infoEmp.name);
-        }
+        //private void speak_checkout(API_odoo.MyResponse infoEmp)
+        //{
+        //    var synthesizer = new SpeechSynthesizer();
+        //    synthesizer.SetOutputToDefaultAudioDevice();
+        //    synthesizer.Speak("Goodbye" + infoEmp.name);
+        //}
+
+
+        /* gender to vietnamese*/
         private String gender_to_text(String gender)
         {
             if (gender.Equals("male"))
@@ -501,7 +507,7 @@ namespace RFIDAttendance.OposControl
                 return " anh ";
             }
         }
-        // text to speech with google translate
+         /*text to speech with google translate*/
         private void speakGoogle(API_odoo.MyResponse infoEmp,String textread)
         {
             if (!Program.mainForm.mute)
@@ -555,11 +561,18 @@ namespace RFIDAttendance.OposControl
                 }
             }
         }
-            void Update_Info_Now_Checkin(API_odoo.MyResponse infoEmp, string dateTime_checkin)
+        //update display
+        void Update_Info_Now_Checkin(API_odoo.MyResponse infoEmp, string dateTime_checkin)
         {
+            Program.mainForm.textBoxName.ForeColor = Color.White;
+            Program.mainForm.textBoxID.ForeColor = Color.White;
+            Program.mainForm.textBoxDepartment.ForeColor = Color.White;
             Program.mainForm.textBoxName.Text = infoEmp.name;
             Program.mainForm.textBoxID.Text = infoEmp.id;
             Program.mainForm.textBoxDepartment.Text = infoEmp.department;
+
+
+
 
             if (infoEmp != null)
             {
@@ -575,12 +588,21 @@ namespace RFIDAttendance.OposControl
                 image = image.Trim(listTrim);
                 Program.mainForm.pictureBoxInfo.Image = GlobalVariables.cam_check.stringToImage(image);
             }
+            else
+            {
+                Image NoImageLoad = Image.FromFile(GlobalVariables.path_ImageError);
+                Program.mainForm.pictureBoxInfo.Image = NoImageLoad;
+            }
         }
         void Update_Info_Now_Checkout(API_odoo.MyResponse infoEmp, string dateTime_checkout)
         {
+            Program.mainForm.textBoxName.ForeColor = Color.White;
+            Program.mainForm.textBoxID.ForeColor = Color.White;
+            Program.mainForm.textBoxDepartment.ForeColor = Color.White;
             Program.mainForm.textBoxName.Text = infoEmp.name;
             Program.mainForm.textBoxID.Text = infoEmp.id;
             Program.mainForm.textBoxDepartment.Text = infoEmp.department;
+
             if (infoEmp != null)
             {
                 // DateTime temp = DateTime.Now;
@@ -596,7 +618,7 @@ namespace RFIDAttendance.OposControl
             }
             else
             {
-                Image NoImageLoad = Image.FromFile("Resource_RFID/noimage.png");
+                Image NoImageLoad = Image.FromFile(GlobalVariables.path_ImageError);
                 Program.mainForm.pictureBoxInfo.Image = NoImageLoad;
             }
             //  ShowInfo_Object.avatar.Image = GlobalData.Cam1.stringToImage(image);
@@ -608,8 +630,13 @@ namespace RFIDAttendance.OposControl
 
             string image_checkin = infoEmp.last_checkin_image;
             string image_checkout = infoEmp.last_checkout_image;
+            Program.mainForm.textBoxTimeLastCheckIn.ForeColor = Color.White;
+            Program.mainForm.textBoxTimeLastCheckIn.ForeColor = Color.White;
+
             Program.mainForm.textBoxTimeLastCheckIn.Text = infoEmp.last_checkin;
             Program.mainForm.textBoxTimeLastCheckOut.Text = infoEmp.last_checkout;
+            Program.mainForm.pictureBoxLastCheckIn.Image = null;
+            Program.mainForm.pictureBoxLastCheckOut.Image = null;
             if (image_checkin != "False")
             {
                 Program.mainForm.pictureBoxLastCheckIn.Image = GlobalVariables.cam_check.stringToImage(image_checkin);
@@ -649,6 +676,9 @@ namespace RFIDAttendance.OposControl
         }
         void Update_Info_REcently_CheckINCheckOUT_haveAVATAR(API_odoo.MyResponse infoEmp)
         {
+            Program.mainForm.textBoxName.ForeColor = Color.White;
+            Program.mainForm.textBoxID.ForeColor = Color.White;
+            Program.mainForm.textBoxDepartment.ForeColor = Color.White;
             Program.mainForm.textBoxName.Text = infoEmp.name;
             Program.mainForm.textBoxID.Text = infoEmp.id;
             Program.mainForm.textBoxDepartment.Text = infoEmp.department;
@@ -847,31 +877,6 @@ namespace RFIDAttendance.OposControl
                 GlobalVariables.OPOSStatus = "STOPPING";
             }
         }
-
-
-        //Call API
-/*        public async Task RFIDtoJAN(HttpClient api_client, string code_value, IntPtr sub_wm)
-        {
-            string json = JsonSerializer.Serialize(new { rfid = code_value, api_key = GlobalVariables.api_key });
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var result = await api_client.PostAsync(GlobalVariables.sub_url, content);
-            string resultContent = await result.Content.ReadAsStringAsync();
-
-            MyJson objectJson = JsonSerializer.Deserialize<MyJson>(resultContent);
-            if (objectJson.code == "00")
-            {
-                var jan1 = objectJson.data["jancode_1"];
-                var jan2 = objectJson.data["jancode_2"];
-                PressKeyJAN(jan1, jan2, sub_wm);
-            }
-            else
-            {
-                GlobalVariables.rfid_code.Remove(code_value);
-                Console.WriteLine(objectJson.message);
-            }
-
-        }*/
-
         //Converte List
         private string ConvertTagIDCode(string code_value)
         {
@@ -892,23 +897,23 @@ namespace RFIDAttendance.OposControl
         }
 
 
-        //Sendkeys to WEBPOS
-        public static void PressKeyJAN(string jan1, string jan2, IntPtr sub_wm)
-        {
-            foreach (var c in jan2)
-            {
-                WindowAPI.PostMessage(sub_wm, (uint)GlobalVariables.WM_KEYDOWN, (int)(System.Enum.Parse(typeof(GlobalVariables.Keys), "D" + c)), (int)(0));
-            }
-            WindowAPI.PostMessage(sub_wm, (uint)GlobalVariables.WM_KEYDOWN, (int)(System.Enum.Parse(typeof(GlobalVariables.Keys), "Return")), (int)(0));
+        ////Sendkeys to WEBPOS
+        //public static void PressKeyJAN(string jan1, string jan2, IntPtr sub_wm)
+        //{
+        //    foreach (var c in jan2)
+        //    {
+        //        WindowAPI.PostMessage(sub_wm, (uint)GlobalVariables.WM_KEYDOWN, (int)(System.Enum.Parse(typeof(GlobalVariables.Keys), "D" + c)), (int)(0));
+        //    }
+        //    WindowAPI.PostMessage(sub_wm, (uint)GlobalVariables.WM_KEYDOWN, (int)(System.Enum.Parse(typeof(GlobalVariables.Keys), "Return")), (int)(0));
 
-            foreach (var c in jan1)
-            {
-                WindowAPI.PostMessage(sub_wm, (uint)GlobalVariables.WM_KEYDOWN, (int)(System.Enum.Parse(typeof(GlobalVariables.Keys), "D" + c)), (int)(0));
-            }
+        //    foreach (var c in jan1)
+        //    {
+        //        WindowAPI.PostMessage(sub_wm, (uint)GlobalVariables.WM_KEYDOWN, (int)(System.Enum.Parse(typeof(GlobalVariables.Keys), "D" + c)), (int)(0));
+        //    }
 
-            WindowAPI.PostMessage(sub_wm, (uint)GlobalVariables.WM_KEYDOWN, (int)(System.Enum.Parse(typeof(GlobalVariables.Keys), "Return")), (int)(0));
-            //Thread.Sleep(100);
-        }
+        //    WindowAPI.PostMessage(sub_wm, (uint)GlobalVariables.WM_KEYDOWN, (int)(System.Enum.Parse(typeof(GlobalVariables.Keys), "Return")), (int)(0));
+        //    //Thread.Sleep(100);
+        //}
 
       
 

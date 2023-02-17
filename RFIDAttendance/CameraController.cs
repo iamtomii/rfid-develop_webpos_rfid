@@ -1,4 +1,6 @@
 ﻿using OpenCvSharp;
+using OpenCvSharp.Extensions;
+using RFIDAttendance.Common;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -6,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace RFIDAttendance
 {
@@ -32,35 +35,97 @@ namespace RFIDAttendance
 
 
         }
+        private bool captureInProgress = false;
+        public void StreamAndSaveVideo(string outputFilename, int fps)
+        {
+            // Mở kết nối tới camera
+            StreamVideo1();
+
+            // Tạo đối tượng VideoWriter để ghi video
+            var writer = new VideoWriter(outputFilename, FourCC.XVID, fps, new OpenCvSharp.Size(GlobalVariables.sizevideo_width, GlobalVariables.sizevideo_height));
+
+            // Bắt đầu stream video và lưu lại từng khung hình vào file video
+            Mat frame = new Mat();
+            while (capture.IsOpened()&Program.mainForm.Isstartstreamvideo==true)
+            {
+                capture.Read(frame);
+                if (frame.Empty())
+                {
+                    break;
+                }
+                Mat resizedFrame = new Mat();
+                Cv2.Resize(frame, resizedFrame, new OpenCvSharp.Size(GlobalVariables.sizevideo_width, GlobalVariables.sizevideo_height));
+                string text = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                Cv2.PutText(resizedFrame, text, new OpenCvSharp.Point(10, 50), HersheyFonts.HersheyScriptSimplex, 0.2, Scalar.White, 1, LineTypes.AntiAlias, false);
+                writer.Write(resizedFrame);
+            }
+
+            // Giải phóng tài nguyên
+            writer.Release();
+            capture.Release();
+        }
+
+
+
+
+        public void StreamVideo1()
+        {
+            // Set the captureInProgress flag to true
+            captureInProgress = true;
+
+            // Create a window to display the camera stream
+            //Cv2.NamedWindow("Camera", WindowMode.Normal);
+
+            // Start the capture loop in a separate thread
+            Task.Run(() => {
+                while (captureInProgress)
+                {
+                    // Read a frame from the camera
+                    try
+                    {
+                        using (Mat frame = new Mat())
+                        {
+                            capture.Read(frame);
+
+                            // Check if the frame is empty
+                            if (frame.Empty())
+                            {
+                                // If the frame is empty, break out of the loop
+                                break;
+                            }
+
+                            // Display the frame in the 'Camera' window
+
+                            //Cv2.ImShow("Camera", frame);
+                            Cv2.WaitKey(1);
+                        }
+                    } catch(Exception ex) {MainForm.WriteLogE(ex); }
+
+                }
+            });
+        }
+    public void StopStream()
+    {
+        // Set the captureInProgress flag to false to stop the capture loop
+        captureInProgress = false;
+
+        // Release the VideoCapture object
+        if (capture != null)
+        {
+            capture.Release();
+            capture.Dispose();
+            capture = null;
+        }
+
+        // Close the 'Camera' window
+        Cv2.DestroyWindow("Camera");
+    }
 
         public string GetImage()
         {
             Mat currentFrame = new Mat();
             string base64String;
             currentFrame = capture.RetrieveMat();
-
-            //try
-            //{
-            //    currentFrame = capture.QueryFrame();
-            //    int i = 3;
-
-            //    while (i > 0)
-            //    {
-            //        if (currentFrame == null)
-            //        {
-            //            currentFrame = capture.QueryFrame();
-            //            i--;
-            //        }
-            //        else
-            //        {
-            //            break;
-            //        }
-            //    }
-            //}
-            //catch(Exception e){
-            //    Console.WriteLine("CAMERA EXCEPTION: "+e);
-
-            //}
 
             if (!currentFrame.Empty())
             {
@@ -71,13 +136,11 @@ namespace RFIDAttendance
 
                 byte[] imageBytes = stream.ToArray();
                 base64String = Convert.ToBase64String(imageBytes);
-                //DateTime time1 = DateTime.Now;
-                //  saveImage.Save(time1.ToString("yyyyMMdd-HH:mm:ss") + ".png");
             }
             else
             {
 
-                Image saveImageLoad = Image.FromFile("Resource_RFID/error.png");
+                Image saveImageLoad = Image.FromFile(GlobalVariables.path_ImageError);
                 byte[] imageBytes = imgToByteArray(saveImageLoad);
                 base64String = Convert.ToBase64String(imageBytes);
             }
@@ -123,19 +186,6 @@ namespace RFIDAttendance
             }
 
             byte[] bytes = Convert.FromBase64String(inputString);
-
-            // byte[] bytes = Convert.FromBase64String(inputString);
-            // Image image = new Bitmap(200, 200);
-
-
-            //  byte[] imageBytes = Convert.FromBase64String(inputString);
-            //Convert byte[] to Image
-            /*using (var ms = new MemoryStream(imageBytes, 0, imageBytes.Length))
-            {
-                image = Image.FromStream(ms, true, true);
-                return image;
-            }*/
-
             using (MemoryStream ms = new MemoryStream(bytes, 0, bytes.Length))
             {
                 ms.Write(bytes, 0, bytes.Length);
@@ -148,151 +198,5 @@ namespace RFIDAttendance
 
         }
 
-        public string getSaveFolder(string parent_dict, string check_dict, string date_dict)
-        {
-            if (!Directory.Exists(parent_dict))
-            {
-                Directory.CreateDirectory(parent_dict);
-            }
-
-            string combinedPath = Path.Combine(parent_dict, check_dict);
-            if (!Directory.Exists(combinedPath))
-            {
-                Directory.CreateDirectory(combinedPath);
-            }
-
-            string combinedPath1 = Path.Combine(combinedPath, date_dict);
-            if (!Directory.Exists(combinedPath1))
-            {
-                Directory.CreateDirectory(combinedPath1);
-
-            }
-            return combinedPath1;
-        }
-        public String stringToImage1(string inputString)
-        {
-            Image image = new Bitmap(100, 1000);
-            String signal = "";
-
-            if (string.IsNullOrEmpty(inputString))
-            {
-                return signal;
-            }
-
-            byte[] bytes = Convert.FromBase64String(inputString);
-
-            // byte[] bytes = Convert.FromBase64String(inputString);
-            // Image image = new Bitmap(200, 200);
-
-
-            //  byte[] imageBytes = Convert.FromBase64String(inputString);
-            //Convert byte[] to Image
-            /*using (var ms = new MemoryStream(imageBytes, 0, imageBytes.Length))
-            {
-                image = Image.FromStream(ms, true, true);
-                return image;
-            }*/
-
-            using (MemoryStream ms = new MemoryStream(bytes, 0, bytes.Length))
-            {
-                ms.Write(bytes, 0, bytes.Length);
-                image = Image.FromStream(ms, true, true);
-                return signal;
-            }
-
-
-
-
-        }
-
-        public string returnpicture()
-        {
-            Mat currentFrame = new Mat();
-            string base64String;
-            currentFrame = capture.RetrieveMat();
-
-            //try
-            //{
-            //    currentFrame = capture.QueryFrame();
-            //    int i = 3;
-
-            //    while (i > 0)
-            //    {
-            //        if (currentFrame == null)
-            //        {
-            //            currentFrame = capture.QueryFrame();
-            //            i--;
-            //        }
-            //        else
-            //        {
-            //            break;
-            //        }
-            //    }
-            //}
-            //catch(Exception e){
-            //    Console.WriteLine("CAMERA EXCEPTION: "+e);
-
-            //}
-
-            if (!currentFrame.Empty())
-            {
-                Bitmap saveImage = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(currentFrame);
-
-                System.IO.MemoryStream stream = new MemoryStream();
-                saveImage.Save(stream, System.Drawing.Imaging.ImageFormat.Bmp);
-
-                byte[] imageBytes = stream.ToArray();
-                base64String = Convert.ToBase64String(imageBytes);
-                //DateTime time1 = DateTime.Now;
-                //  saveImage.Save(time1.ToString("yyyyMMdd-HH:mm:ss") + ".png");
-            }
-            else
-            {
-
-                Image saveImageLoad = Image.FromFile("Resource_RFID/error.png");
-                byte[] imageBytes = imgToByteArray(saveImageLoad);
-                base64String = Convert.ToBase64String(imageBytes);
-            }
-            Image image = new Bitmap(100, 1000);
-            byte[] bytes = Convert.FromBase64String(base64String);
-
-            // byte[] bytes = Convert.FromBase64String(inputString);
-            // Image image = new Bitmap(200, 200);
-
-
-            //  byte[] imageBytes = Convert.FromBase64String(inputString);
-            //Convert byte[] to Image
-            /*using (var ms = new MemoryStream(imageBytes, 0, imageBytes.Length))
-            {
-                image = Image.FromStream(ms, true, true);
-                return image;
-            }*/
-
-            using (MemoryStream ms = new MemoryStream(bytes, 0, bytes.Length))
-            {
-                ms.Write(bytes, 0, bytes.Length);
-                image = Image.FromStream(ms, true, true);
-                return "0";
-            }
-
-            return "0";
-        }
-            public void queyFrame()
-        {
-            while (true)
-            {
-                try
-                {
-
-                    capture.RetrieveMat();
-                }
-                catch(Exception e)
-                {
-                    Console.WriteLine("Trying to get frame camera...");
-                }
-
-
-            }
-        }
     }
 }

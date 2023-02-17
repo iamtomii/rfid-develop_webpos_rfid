@@ -48,7 +48,19 @@ namespace RFIDAttendance
             public string signalexist { get; set; }
             public string signalcheck { get; set; }
         }
+        public async Task<string> APIGetTimeCheckincutVideoAsync(string url_Odoo, string url_gettimecheckin, string rfid)
+        {
+            var client = new HttpClient();
+            var content=await client.GetStringAsync(url_Odoo+url_gettimecheckin+rfid);
+            return content;
+        }
+        public async Task<string> APIGetTimeCheckoutcutVideoAsync(string url_Odoo, string url_gettimecheckout, string rfid)
+        {
+            var client = new HttpClient();
+            var content=await client.GetStringAsync(url_Odoo+url_gettimecheckout+rfid);
 
+            return content;
+        }
         public async Task<InfoResponse> APIGetInfoEmployeebyID(string url_Odoo, string url_showinfo, string id)
         {
             var client = new HttpClient();

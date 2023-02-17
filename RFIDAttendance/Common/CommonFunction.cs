@@ -12,12 +12,6 @@ namespace RFIDAttendance.Common
 {
     class CommonFunction
     {
-        public static IntPtr getPOSWindow()
-        {
-            Process webpos = Process.GetProcessesByName("AIR_START").First();
-            IntPtr mainWnd = webpos.MainWindowHandle;
-            return mainWnd;
-        }
         public static Process processes;
         public static IEnumerable<IntPtr> windows;
 
@@ -27,7 +21,7 @@ namespace RFIDAttendance.Common
         {
             try
             {
-                processes = Process.GetProcessesByName("AIR_START").First();
+                processes = Process.GetProcessesByName("RFIDAttendance").First();
                 windows = EnumerateProcessWindowHandles(processes);
                 defaultNumOfThread = windows.Count();
                 GlobalVariables.mainWnd = windows.First();
@@ -93,17 +87,12 @@ namespace RFIDAttendance.Common
             atenaSetting = ValidateAntenaPower(atenaSetting);
             List<string> valueList = new List<string>(atenaSetting.Values);
             GlobalVariables.atenaPowerCSV = String.Join(",", valueList.ToArray());
-
-
             GlobalVariables.api_key = dataInFile["api_key"];
             GlobalVariables.url_api = dataInFile["url_api"];
             GlobalVariables.sub_url = dataInFile["sub_url"];
             GlobalVariables.device_name = dataInFile["device_name"];
             GlobalVariables.rT = (int)Int64.Parse(dataInFile["rT"]);
-
-
             GlobalVariables.webpos_local_data_url = dataInFile["webpos_local_data_url"];
-
             GlobalVariables.input_id_emp = dataInFile["input_id_emp"];
             GlobalVariables.id_emp = dataInFile["id_emp"];
             GlobalVariables.sleep_key = Int32.Parse(dataInFile["sleep_key"]);
@@ -122,9 +111,16 @@ namespace RFIDAttendance.Common
             GlobalVariables.webpos_app_path = dataInFile["webpos_app_path"];
             GlobalVariables.url_Odoo = dataInFile["url_Odoo"];
             GlobalVariables.url_updatecheckout = dataInFile["url_updatecheckout"];
+            GlobalVariables.url_gettimecheckin = dataInFile["url_gettimecheckin"];
+            GlobalVariables.url_gettimecheckout = dataInFile["url_gettimecheckout"];
+            GlobalVariables.url_videoinput = dataInFile["url_videoinput"];
+            GlobalVariables.url_videooutput = dataInFile["url_videooutput"];
+
             GlobalVariables.url_updateforgetcheckout = dataInFile["url_updateforgetcheckout"];
             GlobalVariables.url_checkin = dataInFile["url_checkin"];
             GlobalVariables.url_createnew = dataInFile["url_createnew"];
+            GlobalVariables.url_gif_usermanual = dataInFile["url_gif_usermanual"];
+            GlobalVariables.RFIDAttendance_path = dataInFile["RFIDAttendance_path"];
 
             // time on off sound when checkin checkout
             GlobalVariables.time_checkin_sound_on1 = (int)Int64.Parse(dataInFile["time_checkin_sound_on1"]);
@@ -136,6 +132,9 @@ namespace RFIDAttendance.Common
             GlobalVariables.time_checkout_sound_off1 = (int)Int64.Parse(dataInFile["time_checkout_sound_off1"]);
             GlobalVariables.time_checkout_sound_off2 = (int)Int64.Parse(dataInFile["time_checkout_sound_off2"]);
             GlobalVariables.time_reset_check = dataInFile["time_reset_check"];
+            GlobalVariables.time_startstreamvideo = dataInFile["time_startstreamvideo"];
+            GlobalVariables.time_endstreamvideo = dataInFile["time_endstreamvideo"];
+            GlobalVariables.time_startcutvideo = dataInFile["time_startcutvideo"];
             GlobalVariables.hours_change = (int)Int64.Parse(dataInFile["hours_change"]);
             // text checkin checkout
             GlobalVariables.text_checkin = dataInFile["text_checkin"];
@@ -144,6 +143,13 @@ namespace RFIDAttendance.Common
             GlobalVariables.auto = dataInFile["auto"];
             //timer
             GlobalVariables.timer_rfid = dataInFile["timer_rfid"];
+            //
+            GlobalVariables.check_videolength = (int)Int64.Parse(dataInFile["check_videolength"]);
+            GlobalVariables.sizevideo_width = (int)Int64.Parse(dataInFile["sizevideo_width"]);
+            GlobalVariables.sizevideo_height = (int)Int64.Parse(dataInFile["sizevideo_height"]);
+            GlobalVariables.fps = (int)Int64.Parse(dataInFile["fps"]);
+            GlobalVariables.video_extension = dataInFile["video_extension"];
+            //
 
 
             string[] titles = dataInFile["state_title"].Split(',');

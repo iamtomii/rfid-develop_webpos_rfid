@@ -33,20 +33,6 @@ namespace RFIDAttendance.Common
 
 
         public static String Version = "Ver 1.1.0.1";
-        public enum State : int
-        {
-            State00 = 0,
-            State10,
-            State11,
-            State12,
-            State20,
-            State30,
-            State41,
-            State42,
-            State43,
-            State50,
-        }
-
         public enum Keys : Int32
         {
             //0 key
@@ -264,50 +250,6 @@ namespace RFIDAttendance.Common
             NumLock = 0x0,
             Null = 0x0,
         }
-
-        public enum NumberKeys : int
-        {
-            //0 key
-            D0 = 0,
-            //1 key
-            D1 = 1,
-            //2 key
-            D2 = 2,
-            //3 key
-            D3 = 3,
-            //4 key
-            D4 = 4,
-            //5 key
-            D5 = 5,
-            //6 key
-            D6 = 6,
-            //7 key
-            D7 = 7,
-            //8 key
-            D8 = 8,
-            //9 key
-            D9 = 9,
-            //Numeric keypad 0 key
-            NumPad0 = 0,
-            //Numeric keypad 1 key
-            NumPad1 = 1,
-            //Numeric keypad 2 key
-            NumPad2 = 2,
-            //Numeric keypad 3 key  
-            NumPad3 = 3,
-            //Numeric keypad 4 key  
-            NumPad4 = 4,
-            //Numeric keypad 5 key  
-            NumPad5 = 5,
-            //Numeric keypad 6 key  
-            NumPad6 = 6,
-            //Numeric keypad 7 key
-            NumPad7 = 7,
-            //Numeric keypad 8 key  
-            NumPad8 = 8,
-            //Numeric keypad 9 key  
-            NumPad9 = 9,
-        }
         public static String[] ingoreKey = { "Tab", "Alt", "System", "NumLock" };
         public static uint WM_KEYDOWN = 0x0100;
         public static uint MOUSE_LEFTDOWN = 0x0201;
@@ -343,6 +285,19 @@ namespace RFIDAttendance.Common
         public static int time_checkout_sound_on2;
         public static int time_checkout_sound_off1;
         public static int time_checkout_sound_off2;
+        public static string RFIDAttendance_path;
+        public static string url_gettimecheckin;
+        public static string url_gettimecheckout;
+        public static string time_startstreamvideo;
+        public static string time_endstreamvideo;
+        public static string time_startcutvideo;
+        public static int check_videolength;
+        public static int sizevideo_width;
+        public static int sizevideo_height;
+        public static int fps;
+        public static string video_extension;
+        public static string url_videoinput;
+        public static string url_videooutput;
         public static string url_Odoo;
         public static string url_checkin;
         public static string auto;
@@ -357,6 +312,7 @@ namespace RFIDAttendance.Common
         public static string url_createnew;
         public static string url_showinfo;
         public static string url_camera;
+        public static string url_gif_usermanual;
         public static string path_ImageError;
         public static int hours_change;
         public static string api_key;

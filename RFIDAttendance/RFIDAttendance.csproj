@@ -61,7 +61,10 @@
       <HintPath>..\packages\Costura.Fody.5.7.0\lib\netstandard1.0\Costura.dll</HintPath>
     </Reference>
     <Reference Include="InterfaceLib">
-      <HintPath>..\..\..\..\TestRfidHelper\TestRfidHelper.MQ\bin\Debug\InterfaceLib.dll</HintPath>
+      <HintPath>..\..\..\..\TestRfidHelper.MQ\bin\Debug\InterfaceLib.dll</HintPath>
+    </Reference>
+    <Reference Include="MediaToolkit, Version=1.1.0.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MediaToolkit.1.1.0.1\lib\net40\MediaToolkit.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.6.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
@@ -113,10 +116,10 @@
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="RabbitMQ.Client">
-      <HintPath>..\..\..\..\TestRfidHelper\packages\RabbitMQ.Client.6.4.0\lib\net461\RabbitMQ.Client.dll</HintPath>
+      <HintPath>..\..\..\..\TestRfidHelper.MQ\bin\Debug\RabbitMQ.Client.dll</HintPath>
     </Reference>
     <Reference Include="Rfid.Helper">
-      <HintPath>..\..\..\..\TestRfidHelper\TestRfidHelper.MQ\libs\Rfid.Helper.dll</HintPath>
+      <HintPath>..\..\..\..\TestRfidHelper.MQ\bin\Debug\Rfid.Helper.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.AppContext, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -329,6 +332,7 @@
     <Compile Include="dialog.Designer.cs">
       <DependentUpon>dialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="FfmpegHandler.cs" />
     <Compile Include="GlobalData.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
@@ -343,6 +347,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RFID_MQ.cs" />
+    <Compile Include="StateModel\ConvertFileDetails.cs" />
     <Compile Include="StateModel\OCRText.cs" />
     <Compile Include="WinAPI\WindowAPI.cs" />
     <EmbeddedResource Include="AppStarting.resx">
@@ -408,7 +413,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="AI POWER.ico" />
+    <Content Include="ffmpeg.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="logo.ico" />
+    <Content Include="Resource_RFID\usermanual.gif" />
     <Content Include="Resource_RFID\error.png" />
     <Content Include="Resource_RFID\noimage.jpg" />
     <Content Include="TitleState\payment.jpg" />
