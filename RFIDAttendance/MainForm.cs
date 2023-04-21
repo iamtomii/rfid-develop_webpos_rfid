@@ -26,11 +26,12 @@ namespace RFIDAttendance
         {
             InitializeComponent();
         }
-
         public bool mute = false;
         private bool appActiving = false;
         public Boolean Ischeckin = true;
         public Boolean Isstartstreamvideo = false;
+        private string result;
+
         public string Name { get; set; }
         public DateTime beginTime { get; set; }
         private void Form1_Load(object sender, EventArgs e)
@@ -40,11 +41,11 @@ namespace RFIDAttendance
             try {
                 pictureBoxmute.Load(string.Format("Images/{0}.png", "volume"));
             }
-            catch(Exception err)
+            catch (Exception err)
             {
                 WriteLogE(err);
             }
-            
+
             Process[] processes = Process.GetProcessesByName("WEBPOS_RFIDSender");
             if (processes.Length > 1)
             {
@@ -65,7 +66,6 @@ namespace RFIDAttendance
             {
                 GlobalVariables.cam_check = new CameraController();
                 GlobalVariables.cam_check.StreamVideo(GlobalVariables.url_camera);
-
             }
             if (GlobalVariables.auto == "0")
             {
@@ -85,6 +85,7 @@ namespace RFIDAttendance
                 Task.Run(() => CheckHour());
                 Task.Run(() => CheckRFIDRemoved());
                 Task.Run(() => playVideo());
+
             }
             else
             {
@@ -94,13 +95,14 @@ namespace RFIDAttendance
                 //GlobalVariables.cam_check.StreamAndSaveVideo("output.avi");
                 try
                 {
-                    Image gif_usermanual = Image.FromFile(GlobalVariables.url_gif_usermanual);
-                    this.gifusermanual.Image = gif_usermanual;
+                    //Image gif_usermanual = Image.FromFile(GlobalVariables.url_gif_usermanual);
+                    //this.gifusermanual.Image = gif_usermanual;
+                    
                 } catch (Exception ex)
                 {
                     WriteLogE(ex);
                 }
-                
+
                 ReadLogRFID_checkin();
                 Task.Run(() => ResetCheckIn());
                 Task.Run(() => CheckRFIDReset());
@@ -109,6 +111,8 @@ namespace RFIDAttendance
                 Task.Run(() => isStartStreamVideo());
                 Task.Run(() => streamVideoSaveVideo());
                 Task.Run(() => dailyCutVideo());
+                Task.Run(() => dailyConvertBase64());
+
 
             }
         }
@@ -167,8 +171,7 @@ namespace RFIDAttendance
             while (true)
             {
                 try {
-                    String inputfilename = getCurrentTime().ToString("yyyy_MM_dd")+@"\"+getCurrentTime().ToString("yyyy_MM_dd")+GlobalVariables.video_extension;                   
-
+                    String inputfilename = getCurrentTime().ToString("yyyy_MM_dd") + @"\" + getCurrentTime().ToString("yyyy_MM_dd") + GlobalVariables.video_extension;
                     DateTime time_startCutVideo = DateTime.ParseExact(GlobalVariables.time_startcutvideo, "HH:mm:ss", CultureInfo.InvariantCulture);
                     if ((getCurrentTime().Hour == time_startCutVideo.Hour) & (getCurrentTime().Minute == time_startCutVideo.Minute) & (getCurrentTime().Second == time_startCutVideo.Second))
                     {
@@ -189,9 +192,103 @@ namespace RFIDAttendance
                             }
                         }
                     }
-                } catch (Exception e) { WriteLogE(e); }
+                }
+                catch (Exception e) { WriteLogE(e); }
             }
         }
+        private async Task dailyConvertBase64()
+        {
+            while (true)
+            {
+                try
+                {
+                    //Đường dẫn tới thư mục có video
+                    string directionPath = System.IO.Path.Combine(GlobalVariables.url_videooutput, getCurrentTime().ToString("yyyy_MM_dd"));
+                    //string directionPath = @"D:\videotest\2023_03_08"; //+ getCurrentTime().ToString("yyyy_MM_dd");
+                    //Đọc tất cả các files trong thư mục chứa video
+                    DateTime time_startConvertVideo = DateTime.ParseExact(GlobalVariables.time_startconvertbase64, "HH:mm:ss", CultureInfo.InvariantCulture);
+                    if ((getCurrentTime().Hour == time_startConvertVideo.Hour) & (getCurrentTime().Minute == time_startConvertVideo.Minute) & (getCurrentTime().Second == time_startConvertVideo.Second))
+                    {
+                        foreach (string rfid in GlobalVariables.list_rfid_checkin)
+                        {
+                            API_odoo api = new API_odoo();
+                            string timecheckin = await api.APIGetTimeCheckincutVideoAsync(GlobalVariables.url_Odoo, GlobalVariables.url_gettimecheckin, rfid);
+                            if (!(timecheckin == "false"))
+                            {
+                                string base64 = VideotoBase64_checkin(directionPath, rfid);
+                                Task.Run(() => api.API_PostBase64_Checkin(rfid, GlobalVariables.url_Odoo, base64, GlobalVariables.url_checkin_videotobase64));
+                            }
+                            Thread.Sleep(1000);
+                            string timecheckout = await api.APIGetTimeCheckoutcutVideoAsync(GlobalVariables.url_Odoo, GlobalVariables.url_gettimecheckout, rfid);
+                            if (!(timecheckout == "false"))
+                            {
+                                string base64_checkout = VideotoBase64_checkout(directionPath, rfid);
+                                Console.WriteLine(base64_checkout);
+                                Task.Run(() => api.API_PostBase64_Checkout(rfid, GlobalVariables.url_Odoo, base64_checkout, GlobalVariables.url_checkout_videotobase64));                              
+                            }
+                        }
+                    }
+                }
+                catch (Exception e) { WriteLogE(e); }
+            }
+        }
+
+        private string VideotoBase64_checkin(string directionPath, string rfid)
+        {
+            string[] files = Directory.GetFiles(directionPath);
+            string base64 = "";
+            foreach (string file in files)
+            {
+                if (file.Contains("checkin") && file.Contains(rfid))
+                {
+                    base64 = GlobalVariables.cam_check.VideoToBase64(file);
+                    break; // Thoát vòng lặp khi tìm được file thỏa mãn điều kiện
+                }
+            }
+            return base64;
+        }
+
+        private string VideotoBase64_checkout(string directionPath, string rfid)
+        {
+            string[] files = Directory.GetFiles(directionPath);
+            string base64 = "";
+            string path = @"D:\base64String.txt";
+            foreach (string file in files)
+            {
+                if (file.Contains("checkout") && file.Contains(rfid))
+                {
+                    base64 = GlobalVariables.cam_check.VideoToBase64(file);
+                    File.WriteAllText(path, base64);
+                    break; // Thoát vòng lặp khi tìm được file thỏa mãn điều kiện
+                }
+            }
+            return base64;
+        }
+
+        // decode convert base64 to video
+        private void base64tovideo()
+        {
+                try
+                {
+                    string path = @"D:\base64String.txt";
+                    using (StreamReader reader = new StreamReader(path))
+                    {
+                        string line;
+                        int index = 0;
+                        // Đọc từng dòng của tệp tin và hiển thị trên màn hình
+                        while ((line = reader.ReadLine()) != null)
+                        {
+                            index++;
+                            GlobalVariables.cam_check.Base64toVideo(line, @"D:\VuLuan\checkin\rfid-develop_webpos_rfid\RFIDAttendance\bin\Debug\Base64toVideo\" + string.Format("video_out_{0}.mp4", index));
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }            
+        }
+
         private string createOutputFileName(string rfid,DateTime currentDateTime,string action)
         {
 
@@ -245,13 +342,14 @@ namespace RFIDAttendance
         {
             while (true)
             {
-                if (Isstartstreamvideo) {
+                if (Isstartstreamvideo)
+                {
                     String datetime = DateTime.Now.ToString("yyyy_MM_dd");
                     string folder_videoname = datetime;
                     string path = @"SaveVideo\" + folder_videoname;
                     Directory.CreateDirectory(path);
                     String outputfilename = path + @"\" + datetime + GlobalVariables.video_extension;
-                    Console.WriteLine(outputfilename);
+                    //Console.WriteLine(outputfilename);
                     GlobalVariables.cam_check.StreamAndSaveVideo(outputfilename, GlobalVariables.fps);
                     //pictureBoxInfo.Invoke(new Action(() => pictureBoxInfo.Image = image));
                 }
@@ -271,8 +369,8 @@ namespace RFIDAttendance
             {
 
                 try 
-                { 
-                   GlobalVariables.cam_check.GetImageBitmap();
+                {
+                    GlobalVariables.cam_check.GetImageBitmap();
                     //pictureBoxInfo.Invoke(new Action(() => pictureBoxInfo.Image = image));
                 } catch(Exception e)
                 {

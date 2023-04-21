@@ -125,7 +125,7 @@ namespace RFIDAttendance.OposControl
                 if (!GlobalVariables.list_rfid_checkin.Contains(new_code))
                 {
                     String image_checkin = GlobalVariables.cam_check.GetImage();
-                    Console.WriteLine(image_checkin);
+                    //Console.WriteLine(image_checkin);
                     //String image_checkin = GlobalData.Cam1.GetImage();
                     string dateTime_checkin = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                     string message = await api.APICheckin(new_code, image_checkin, GlobalVariables.url_Odoo, GlobalVariables.url_checkin, dateTime_checkin);
@@ -180,8 +180,9 @@ namespace RFIDAttendance.OposControl
                 else
                 {
                     String image_checkout = GlobalVariables.cam_check.GetImage();
-                    Console.WriteLine(image_checkout);
+                    //Console.WriteLine(image_checkout);
                     string dateTime_checkout = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
                     string message = await api.APIUpdateCheckOut(new_code, image_checkout, GlobalVariables.url_Odoo, GlobalVariables.url_updatecheckout, dateTime_checkout);
                     if (message == "success")
                     {
@@ -339,10 +340,10 @@ namespace RFIDAttendance.OposControl
                 if (!GlobalVariables.list_rfid_checkin.Contains(new_code))
                 {
                     String image_checkin = GlobalVariables.cam_check.GetImage();
-                    Console.WriteLine(image_checkin);
+                    //Console.WriteLine(image_checkin);
                     string dateTime_checkin = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                     string message = await api.APICheckin(new_code, image_checkin, GlobalVariables.url_Odoo, GlobalVariables.url_checkin, dateTime_checkin);
-
+                        Console.WriteLine(message);
                     string time_session = Int16.Parse(DateTime.Now.ToString("HH")) < 12 ? "morning" : "afternoon";
                     if (message == "success")
                     {
@@ -402,7 +403,7 @@ namespace RFIDAttendance.OposControl
                 if (!GlobalVariables.list_rfid_checkout.Contains(new_code))
                 {
                     String image_checkout = GlobalVariables.cam_check.GetImage();
-                    Console.WriteLine(image_checkout);
+                    //Console.WriteLine(image_checkout);
                     string dateTime_checkout = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                     string message = await api.APICheckout(new_code, image_checkout, GlobalVariables.url_Odoo, GlobalVariables.url_checkout, dateTime_checkout);
                     if (message == "success")

@@ -149,6 +149,9 @@ namespace RFIDAttendance.Common
             GlobalVariables.sizevideo_height = (int)Int64.Parse(dataInFile["sizevideo_height"]);
             GlobalVariables.fps = (int)Int64.Parse(dataInFile["fps"]);
             GlobalVariables.video_extension = dataInFile["video_extension"];
+            GlobalVariables.time_startconvertbase64 = dataInFile["time_startconvertbase64"];
+            GlobalVariables.url_checkin_videotobase64 = dataInFile["url_checkin_videotobase64"];
+            GlobalVariables.url_checkout_videotobase64 = dataInFile["url_checkout_videotobase64"];
             //
 
 

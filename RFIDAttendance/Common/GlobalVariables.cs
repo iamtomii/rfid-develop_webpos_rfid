@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using RFIDAttendance.MQcontrol;
+//using RFIDAttendance.MQcontrol;
 
 namespace RFIDAttendance.Common
 {
@@ -270,7 +270,7 @@ namespace RFIDAttendance.Common
 
         public static AxOPOSRFIDLib.AxOPOSRFID OPOSRFID1 = new AxOPOSRFIDLib.AxOPOSRFID();
         public static OposControl.OPOS opos = new OposControl.OPOS();
-        public static MQcontrol.RFID_MQ mqct = new MQcontrol.RFID_MQ();
+        //public static MQcontrol.RFID_MQ mqct = new MQcontrol.RFID_MQ();
 
         public static IntPtr mainWnd;
 
@@ -291,6 +291,7 @@ namespace RFIDAttendance.Common
         public static string time_startstreamvideo;
         public static string time_endstreamvideo;
         public static string time_startcutvideo;
+        public static string time_startconvertbase64;
         public static int check_videolength;
         public static int sizevideo_width;
         public static int sizevideo_height;
@@ -302,6 +303,8 @@ namespace RFIDAttendance.Common
         public static string url_checkin;
         public static string auto;
         public static string time_reset_check;
+        public static string url_checkin_videotobase64;
+        public static string url_checkout_videotobase64;
         public static string url_updatecheckout;
         public static string url_updateforgetcheckout;
         public static string url_checkout;

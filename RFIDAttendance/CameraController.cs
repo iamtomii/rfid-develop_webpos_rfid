@@ -7,6 +7,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -39,14 +40,15 @@ namespace RFIDAttendance
         public void StreamAndSaveVideo(string outputFilename, int fps)
         {
             // Mở kết nối tới camera
-            StreamVideo1();
-
+            //StreamVideo1();
+            //capture = new VideoCapture(GlobalVariables.url_camera);
+            //capture.Open(GlobalVariables.url_camera);
             // Tạo đối tượng VideoWriter để ghi video
             var writer = new VideoWriter(outputFilename, FourCC.XVID, fps, new OpenCvSharp.Size(GlobalVariables.sizevideo_width, GlobalVariables.sizevideo_height));
 
             // Bắt đầu stream video và lưu lại từng khung hình vào file video
             Mat frame = new Mat();
-            while (capture.IsOpened()&Program.mainForm.Isstartstreamvideo==true)
+            while (capture.IsOpened())
             {
                 capture.Read(frame);
                 if (frame.Empty())
@@ -57,6 +59,7 @@ namespace RFIDAttendance
                 Cv2.Resize(frame, resizedFrame, new OpenCvSharp.Size(GlobalVariables.sizevideo_width, GlobalVariables.sizevideo_height));
                 string text = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                 Cv2.PutText(resizedFrame, text, new OpenCvSharp.Point(10, 50), HersheyFonts.HersheyScriptSimplex, 0.2, Scalar.White, 1, LineTypes.AntiAlias, false);
+                Program.mainForm.gifusermanual.Image = resizedFrame.ToBitmap();
                 writer.Write(resizedFrame);
             }
 
@@ -192,11 +195,34 @@ namespace RFIDAttendance
                 image = Image.FromStream(ms, true, true);
                 return image;
             }
-
-
-
-
         }
+        public String VideoToBase64(string pathvideo)
+        {
+            try
+            {
+                byte[] videobytes = File.ReadAllBytes(pathvideo);
+                string base64String = Convert.ToBase64String(videobytes);
 
+                return base64String;
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine("Message: "+e);
+                return null;
+            }
+        }
+        
+        public void Base64toVideo(String base64String, string file_name_out = "output.mp4")
+        {
+            try
+            {
+                byte[] decodeBytes = Convert.FromBase64String(base64String);
+                File.WriteAllBytes(file_name_out, decodeBytes);
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine("Decode: " + e);
+            }
+        }
     }
 }
